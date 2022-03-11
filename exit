@@ -1,0 +1,138 @@
+[33mcommit 26734d6a618db88956d401b163ba2bb1ae51349f[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m)[m
+Author: Vincent Larivière <vnccorp00@gmail.com>
+Date:   Fri Mar 11 08:53:06 2022 +0100
+
+    first commit
+
+[33mcommit db17a6c9ccf1520e0d78a3587bd76d16882a5f31[m[33m ([m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: luc <luc.bourrat.42@gmail.com>
+Date:   Thu Jan 27 16:35:40 2022 +0100
+
+    uploading the right banner image
+
+[33mcommit 697ef16993d24fdc5455c7e33b7cf3e0f0359972[m
+Author: luc <luc.bourrat.42@gmail.com>
+Date:   Thu Jan 27 16:35:10 2022 +0100
+
+    remove bad banner image
+
+[33mcommit fdbce8ae169446f17fc44779b8060335796fa794[m
+Author: luc <luc.bourrat.42@gmail.com>
+Date:   Thu Jan 27 16:34:07 2022 +0100
+
+    loading the correct script in the confirmation page
+
+[33mcommit 7735212434c3b385f12c68350d5af9c4fd826d81[m
+Author: luc <luc.bourrat.42@gmail.com>
+Date:   Wed Nov 3 13:40:16 2021 +0100
+
+    add html to manage product color
+
+[33mcommit 6d318e50de7692fe42796bc7ccb8443e19c971f1[m
+Author: luc <luc.bourrat.42@gmail.com>
+Date:   Wed Oct 6 14:39:16 2021 +0200
+
+    FrontEnd error fixed. "taille" => "couleur"
+
+[33mcommit 94ad737ad941618fcd3163fb5a9b380a4b4b7099[m
+Author: luc <luc.bourrat.42@gmail.com>
+Date:   Tue Oct 5 18:10:28 2021 +0200
+
+    cleaning indentation
+
+[33mcommit ea5c5417c286d2fd27fed866b00688ed0adcdb61[m
+Author: luc <luc.bourrat.42@gmail.com>
+Date:   Fri Sep 24 16:16:22 2021 +0200
+
+    Products id bug fixed
+
+[33mcommit a19f1f7eba7d431c17c3bcc2d6a4319fc38b6e99[m
+Author: luc <luc.bourrat.42@gmail.com>
+Date:   Mon Sep 6 19:06:55 2021 +0200
+
+    update products property name
+
+[33mcommit 4450ffb2b0c38811026d53826a6d13abd923e1ad[m
+Author: luc <luc.bourrat.42@gmail.com>
+Date:   Thu Sep 2 23:32:13 2021 +0200
+
+    confirmation page content update
+
+[33mcommit 1de0f2b0a1f2a128731c2bf5e341e5eb9cfffa84[m
+Author: luc <luc.bourrat.42@gmail.com>
+Date:   Thu Sep 2 23:31:04 2021 +0200
+
+    rename validation in confirmation
+
+[33mcommit 97839ce682cad24801b456a01489394e04c59a9f[m
+Author: luc <luc.bourrat.42@gmail.com>
+Date:   Thu Sep 2 21:05:21 2021 +0200
+
+    add altTxt to products API models // Update of form label inside cart page
+
+[33mcommit fd031c72d2831d037d920058e180e264c02513a1[m
+Merge: 8f56d33 b802131
+Author: luc <luc.bourrat.42@gmail.com>
+Date:   Thu Sep 2 20:38:30 2021 +0200
+
+    Merge remote-tracking branch 'origin/master'
+
+[33mcommit 8f56d337cce0de45889a0de16145580a64981b4c[m
+Author: luc <luc.bourrat.42@gmail.com>
+Date:   Thu Sep 2 20:36:28 2021 +0200
+
+    add validation page // add error msg tags and data-id inside cart page
+
+[33mcommit b802131f29d4e7f2c7a6a34bd6e9ba43927e036f[m
+Author: luc <luc.bourrat.42@gmail.com>
+Date:   Thu Sep 2 20:36:28 2021 +0200
+
+    add validation page // add error msg tags inside cart page
+
+[33mcommit b6728a5db4295f8da4b69d1ab78b17802f625ad3[m
+Author: luc <luc.bourrat.42@gmail.com>
+Date:   Wed Sep 1 15:19:48 2021 +0200
+
+    graphics update
+
+[33mcommit ded7acc90f429050a87583dcc328680c37283ded[m
+Author: luc <luc.bourrat.42@gmail.com>
+Date:   Mon Aug 30 00:36:35 2021 +0200
+
+    the type attributes of the script tags have been removed
+
+[33mcommit a0c75ebba82c314d3b4009b99d27cfd01e197d70[m
+Author: luc <luc.bourrat.42@gmail.com>
+Date:   Mon Aug 30 00:29:56 2021 +0200
+
+    update of elements in the article html tag
+
+[33mcommit c0d152a8885aede0374250aaf71b384ce3300939[m
+Author: luc <luc.bourrat.42@gmail.com>
+Date:   Mon Aug 30 00:16:53 2021 +0200
+
+    update of elements in the article html tag
+
+[33mcommit 03264348da6fa21278704372f061c91095b079bc[m
+Author: luc <luc.bourrat.42@gmail.com>
+Date:   Mon Aug 30 00:11:14 2021 +0200
+
+    Add alternative text to json
+
+[33mcommit 3806707d36242ab157fb73a7ead313500774db37[m
+Author: luc <luc.bourrat.42@gmail.com>
+Date:   Sun Aug 29 23:52:04 2021 +0200
+
+    cleaning, deleting files
+
+[33mcommit 0da7d45e7a25a7a9fc8cb6eb13819f3a751128cf[m
+Author: luc <luc.bourrat.42@gmail.com>
+Date:   Sat Jul 17 03:48:39 2021 +0200
+
+    Upload new P5 v1
+
+[33mcommit 2f81cb53e65bb1e872c7e7e392273db927e8b586[m
+Author: luc <luc.bourrat.42@gmail.com>
+Date:   Sat Jul 17 03:43:24 2021 +0200
+
+    Initial commit
