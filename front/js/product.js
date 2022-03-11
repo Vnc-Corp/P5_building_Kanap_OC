@@ -219,31 +219,34 @@ console.table(arrayBasket);
 // };
 
 
-// let verifId_localStorage = localStorage.getItem(arrayBasket);
+// let target_arrayId = localStorage.getItem();
 // var el = 6; //Elément à rechercher
 let cloneObj_ok = false;
 async function IfValueInclude() {
     window.addEventListener('click', () => {
 
+        // let target_arrayId = arrayBasket.find(element => {
+        //     console.log(" retour de l'id qui a été trrouvé dans ");
+        // })
         console.log(productId);
         // methode pour parcourir un tableau et demander un retour précis
-        arrayBasket.forEach(element => {
-            if (productId = element){
-                console.log(element.id + " : Cet article ID ce trouve déjà dans le panier");
-            }
-            else {
-                console.log("marche pas ? ou plutôt, l'article ne s'y trouve pas !");
-            }
-        })
+        // arrayBasket.forEach(element => {
+        //     if (productId = element){
+        //         console.log(element.id + " : Cet article ID ce trouve déjà dans le panier");
+        //     }
+        //     else {
+        //         console.log("marche pas ? ou plutôt, l'article ne s'y trouve pas !");
+        //     }
+        // })
 
     })
     // console.log(verifId_localStorage);
             
 };
-
 //----------------------------
 // IfValueInclude();
 //----------------------------
+
 // fonction de vérification si iD est déjà présent dans le panier
 
 let colorInArray = false;
@@ -259,6 +262,21 @@ async function verifId_localStorage() {
             alert(`article ${element.id} existe ! ${element.color}`);
             colorInArray = true;
             idInArray = true;
+
+            if (colorInArray == true && idInArray == true){
+                console.log("couleur " + element.color + " et Id " + element.id + " sont vrai et va pemerttre de rajouter une quantité");
+
+               
+                
+                let newEntree = JSON.parse(localStorage["produit"]);
+                
+                newEntree = resultQuantity + element.quantity;
+                console.log(resultQuantity + "..." + newEntree);
+                
+                localStorage["produit"] = JSON.stringify(newEntree)
+                // stopPropagation();
+            }
+
         }
 
         else {
@@ -267,7 +285,7 @@ async function verifId_localStorage() {
             colorInArray = false;
             idInArray = false;
         }
-        
+
         return 
     })
 

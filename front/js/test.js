@@ -35,7 +35,7 @@ async function getArticleSolo() {
         articleSolo = dataAPI;
         // console.table(articleSolo);
         if (articleSolo){
-            return displayArticleSolo(articleSolo), articleSolo; // attribut la variable à une fonction (qui va afficher)
+            return displayArticleSolo(articleSolo); // attribut la variable à une fonction (qui va afficher)
         }
     })
     
@@ -56,7 +56,7 @@ select_elt = option_elt;
 
 async function displayArticleSolo(articleSolo) {
     // console.table(articleSolo);
-    // const img_elt = document.getElementsByClassName("item__img").innerHTML = articleSolo.imageUrl; //+ articleSolo.altTxt;
+    
     const title_elt = document.getElementById("title").innerHTML = articleSolo.name;
     const price_elt = document.getElementById("price").innerHTML = articleSolo.price;
     const description_elt = document.getElementById("description").innerHTML = articleSolo.description;
@@ -137,7 +137,7 @@ const valueJs = document.querySelector('#quantity'); // attribution qui pointe v
 // console.log(valueJs.value);
 let resultQuantity = "";
 let basketQuantity = () => {
-    
+
     // console.log(valueJs.value);
     
     if (valueJs.value == 0) {
@@ -156,97 +156,150 @@ let basketQuantity = () => {
         console.log("retourn valeur depuis le else");
         resultQuantity = valueJs.value;
         quantityOk = true;
-        console.log(quantityOk);
+        console.log(quantityOk + " : Quantité entree est ok");
         return resultQuantity, quantityOk;
     }
 };
+
 // //--------------------------------------------------------------
 // // Lecture
-let articleLinea = localStorage.getItem("obj");
-let arrayBasket = JSON.parse(articleLinea);
 // -------------------------------------------------------------------------------------------------------
-arrayBasket = [];
 // -------------------------------------------------------------------------------------------------------
 async function newArray(arrayBasket) {
     if (arrayBasket == null) {
         arrayBasket = new Array();
-
+        
         return arrayBasket;
     }
 };
-console.log(arrayBasket);
+
+// console.log(arrayBasket);
+
+
+// let val = localStorage.getItem("articleJson");
+// let articleJson = JSON.parse(val);
+
+let arrayBasket = JSON.parse(localStorage.getItem("produit"));
+// let arrayBasket = [];
 // -------------------------------------------------------------------------------------------------------
 // fonction stokage des données ID / Color / Quantité
-function articleStokage() {
+async function articleStokage() {
     let articleJson = {
         id : productId,
         color : selectColor,
         quantity : resultQuantity
     }
-
-    let newLength = arrayBasket.push(articleJson);
-
-    for (let i = 0; i < arrayBasket.length; i++) {
-        const element = arrayBasket[i];
-        return arrayBasket;
+    
+    if (arrayBasket){
+        console.log("ok if pour après création truc muche");
+        verifId_localStorage();
+        arrayBasket.push(articleJson);
+        localStorage.setItem("produit", JSON.stringify(arrayBasket));
     }
-    
-    console.table(arrayBasket);
-    
-    let articleLinea = JSON.stringify(arrayBasket);
-    localStorage.setItem("obj", articleLinea);
-    
-    console.log(articleJson.quantity + articleJson.color + articleJson.id);
+    else {
+        arrayBasket = [];
+        arrayBasket.push(articleJson);
+        localStorage.setItem("produit", JSON.stringify(arrayBasket));
+        console.log(arrayBasket);
+    }
+    console.log(articleJson.id + " : articleJson.id apres le else de stockageArticle.");
+    console.log(arrayBasket.id + " : arraBasket.id apres le else de stockageArticle.");
+
     return arrayBasket;
 };  
-
+// articleStokage();
 console.table(arrayBasket);
-// console.log(arrayBasket);
-
-// function visuelArticleBasket(articleStokage) {
-//     for (let i = 0; i < arrayBasket.length; i++) {
-//         const element = arrayBasket[i];
-
-//         // if (productId._id && selectColor.value === arrayBasket[i]){
-//         //     console.log("oui, il y a déjà ce produit dans le panier");
-//         // }
-
-//         // else {
-//         //     console.log("Aucun produit ou ne marche pas...");
-//         // }
-//     }
-//     // arrayBasket.map;
-//     console.table(arrayBasket);
-// };
-
-
 //-----------------------------------------------------------------------------------------------
-// var array = [11, 20, 8, 6, 17];
-
-// var el = 6; //Elément à rechercher
-// function IfValueInclude() {
-//     window.addEventListener('click', () => {
-      
-//         if (arrayBasket) {
-//             for (let articleBasket of arrayBasket) {
-//                 console.log(articleBasket.id);
-//                 console.log(productId);
-//                 // if (arrayBasket(productId)){
-//                 //     console.log("oui, il y a déjà ce produit dans le panier");
-//                 // }
-        
-//                 // else {
-//                 //     console.log("Aucun produit ou ne marche pas...");
-//                 // }
-        
-//             }
-//         }
-       
-//         // console.table("je confirme, le produit existe aussi en dehors de la fonction");
-
-//     })
-    
+// function ClearProductId () {
+//     if (productId !== null){
+//         productId = "";
+//         console.log(productId);
+//     }
+//     return productId
 // };
+
+
+// let target_arrayId = localStorage.getItem();
+// var el = 6; //Elément à rechercher
+let cloneObj_ok = false;
+async function IfValueInclude() {
+    window.addEventListener('click', () => {
+
+        // let target_arrayId = arrayBasket.find(element => {
+        //     console.log(" retour de l'id qui a été trrouvé dans ");
+        // })
+        console.log(productId);
+        // methode pour parcourir un tableau et demander un retour précis
+        // arrayBasket.forEach(element => {
+        //     if (productId = element){
+        //         console.log(element.id + " : Cet article ID ce trouve déjà dans le panier");
+        //     }
+        //     else {
+        //         console.log("marche pas ? ou plutôt, l'article ne s'y trouve pas !");
+        //     }
+        // })
+
+    })
+    // console.log(verifId_localStorage);
+            
+};
+//----------------------------
+// IfValueInclude();
+//----------------------------
+
+// fonction de vérification si iD est déjà présent dans le panier
+
+let colorInArray = false;
+let idInArray = false;
+async function verifId_localStorage() {
+    console.log(productId);
+    // methode pour parcourir un tableau et demander un retour précis
+    arrayBasket.forEach(element => {
+        let resultatVerif = colorInArray;
+        let resultatVerifId = idInArray;
+        if (productId === element.id && selectColor === element.color){
+            console.log(element.color + " : Cet article ID ce trouve déjà dans le panier");
+            alert(`article ${element.id} existe ! ${element.color}`);
+            colorInArray = true;
+            idInArray = true;
+
+            if (colorInArray == true && idInArray == true){
+                console.log("couleur " + element.color + " et Id " + element.id + " sont vrai et va pemerttre de rajouter une quantité");
+
+               
+                
+                let newEntree = JSON.parse(localStorage["produit"]);
+                
+                newEntree = resultQuantity + element.quantity;
+                console.log(resultQuantity + "..." + newEntree);
+                
+                localStorage["produit"] = JSON.stringify(newEntree)
+                // stopPropagation();
+            }
+
+        }
+
+        else {
+            console.log("La couleur " + selectColor + "  de l'article ne s'y trouve pas !");
+            alert("Aucun article de merde avec une nouvelle couleur !");
+            colorInArray = false;
+            idInArray = false;
+        }
+
+        return 
+    })
+
+    console.log(colorInArray + " valeur de couleur");
+    console.log(idInArray + " valeur de ID");
+};
+
+console.log(colorInArray + " valeur de couleur");
+console.log(idInArray + " valeur de ID");
+
+
+
+
+
 
 //----------------------------------------------------------------------------------------------
 console.log(productId + " : id du produit");
@@ -273,7 +326,7 @@ buttonAddToCart.addEventListener('click', () => {
     console.table(arrayBasket);
         if (colorOk === true && quantityOk === true) {
             alert(`Vrai Article ${articleSolo.name} ajouté à votre panier !`);
-            articleStokage(arrayBasket); // stocke les données objet Json pour le restituer à la lecture sur les autres pages
+            articleStokage(); // stocke les données objet Json pour le restituer à la lecture sur les autres pages
             // visuelArticleBasket(); // affiche dans la console le tableau article sinon rafraichir la page
 
             console.table(arrayBasket);
@@ -284,7 +337,6 @@ buttonAddToCart.addEventListener('click', () => {
             alert(`Veuillez choisir une couleur avant de valider l'ajout de votre article ${articleSolo.name}`);
             console.log(" Etat couleur : " + colorOk );
             console.log(" Etat quantité : " + colorOk );
-            
         }
 
         else {
@@ -355,16 +407,7 @@ let click = 0;
 //-----------------------------------------------------------------
 // newArray();
 //------------------------------------------------------------------------------------------------
-document.addEventListener('DOMContentLoaded', function() {
-    // if (arrayBasket == null) {
-    //     console.log("vaut null array basket");
-    //     arrayBasket = new Array();
-    //     console.log("ne vaut plus null");
-    //     console.table(arrayBasket);
-    // }
-    // else {
-    //     console.table(arrayBasket);
-    // }
-    // return arrayBasket;
-});
+// document.addEventListener('DOMContentLoaded', function() {
+//     ClearProductId();
+//     });
 console.table(arrayBasket);
