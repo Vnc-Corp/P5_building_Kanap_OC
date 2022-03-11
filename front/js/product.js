@@ -156,7 +156,7 @@ let basketQuantity = () => {
         console.log("retourn valeur depuis le else");
         resultQuantity = valueJs.value;
         quantityOk = true;
-        console.log(quantityOk);
+        console.log(quantityOk + " : Quantité entree est ok");
         return resultQuantity, quantityOk;
     }
 };
@@ -189,9 +189,10 @@ async function articleStokage() {
         color : selectColor,
         quantity : resultQuantity
     }
-
+    
     if (arrayBasket){
         console.log("ok if pour après création truc muche");
+        verifId_localStorage();
         arrayBasket.push(articleJson);
         localStorage.setItem("produit", JSON.stringify(arrayBasket));
     }
@@ -201,53 +202,86 @@ async function articleStokage() {
         localStorage.setItem("produit", JSON.stringify(arrayBasket));
         console.log(arrayBasket);
     }
+    console.log(articleJson.id + " : articleJson.id apres le else de stockageArticle.");
+    console.log(arrayBasket.id + " : arraBasket.id apres le else de stockageArticle.");
+
+    return arrayBasket;
 };  
-
+// articleStokage();
 console.table(arrayBasket);
-
-// function visuelArticleBasket(articleStokage) {
-//     for (let i = 0; i < arrayBasket.length; i++) {
-//         const element = arrayBasket[i];
-
-//         // if (productId._id && selectColor.value === arrayBasket[i]){
-//         //     console.log("oui, il y a déjà ce produit dans le panier");
-//         // }
-
-//         // else {
-//         //     console.log("Aucun produit ou ne marche pas...");
-//         // }
-//     }
-//     // arrayBasket.map;
-//     console.table(arrayBasket);
-// };
-
 //-----------------------------------------------------------------------------------------------
-// var array = [11, 20, 8, 6, 17];
-
-// var el = 6; //Elément à rechercher
-// function IfValueInclude() {
-//     window.addEventListener('click', () => {
-      
-//         if (arrayBasket) {
-//             for (let articleBasket of arrayBasket) {
-//                 console.log(articleBasket.id);
-//                 console.log(productId);
-//                 // if (arrayBasket(productId)){
-//                 //     console.log("oui, il y a déjà ce produit dans le panier");
-//                 // }
-        
-//                 // else {
-//                 //     console.log("Aucun produit ou ne marche pas...");
-//                 // }
-        
-//             }
-//         }
-       
-//         // console.table("je confirme, le produit existe aussi en dehors de la fonction");
-
-//     })
-    
+// function ClearProductId () {
+//     if (productId !== null){
+//         productId = "";
+//         console.log(productId);
+//     }
+//     return productId
 // };
+
+
+// let verifId_localStorage = localStorage.getItem(arrayBasket);
+// var el = 6; //Elément à rechercher
+let cloneObj_ok = false;
+async function IfValueInclude() {
+    window.addEventListener('click', () => {
+
+        console.log(productId);
+        // methode pour parcourir un tableau et demander un retour précis
+        arrayBasket.forEach(element => {
+            if (productId = element){
+                console.log(element.id + " : Cet article ID ce trouve déjà dans le panier");
+            }
+            else {
+                console.log("marche pas ? ou plutôt, l'article ne s'y trouve pas !");
+            }
+        })
+
+    })
+    // console.log(verifId_localStorage);
+            
+};
+
+//----------------------------
+// IfValueInclude();
+//----------------------------
+// fonction de vérification si iD est déjà présent dans le panier
+
+let colorInArray = false;
+let idInArray = false;
+async function verifId_localStorage() {
+    console.log(productId);
+    // methode pour parcourir un tableau et demander un retour précis
+    arrayBasket.forEach(element => {
+        let resultatVerif = colorInArray;
+        let resultatVerifId = idInArray;
+        if (productId === element.id && selectColor === element.color){
+            console.log(element.color + " : Cet article ID ce trouve déjà dans le panier");
+            alert(`article ${element.id} existe ! ${element.color}`);
+            colorInArray = true;
+            idInArray = true;
+        }
+
+        else {
+            console.log("La couleur " + selectColor + "  de l'article ne s'y trouve pas !");
+            alert("Aucun article de merde avec une nouvelle couleur !");
+            colorInArray = false;
+            idInArray = false;
+        }
+        
+        return 
+    })
+
+    console.log(colorInArray + " valeur de couleur");
+    console.log(idInArray + " valeur de ID");
+};
+
+console.log(colorInArray + " valeur de couleur");
+console.log(idInArray + " valeur de ID");
+
+
+
+
+
 
 //----------------------------------------------------------------------------------------------
 console.log(productId + " : id du produit");
@@ -356,15 +390,6 @@ let click = 0;
 // newArray();
 //------------------------------------------------------------------------------------------------
 // document.addEventListener('DOMContentLoaded', function() {
-//     // if (arrayBasket == null) {
-//     //     console.log("vaut null array basket");
-//     //     arrayBasket = new Array();
-//     //     console.log("ne vaut plus null");
-//     //     console.table(arrayBasket);
-//     // }
-//     // else {
-//     //     console.table(arrayBasket);
-//     // }
-//     // return arrayBasket;
-// });
+//     ClearProductId();
+//     });
 console.table(arrayBasket);
