@@ -1,17 +1,4 @@
-// const product_item_solo = window.location.search.split("?").join("");
-// // ajouter split à la fin enlève qu'on ne veut pas et .join enlève l'élément vide /!\
-// console.table(product_item_solo);
-
-// const { getAllProducts } = require("../../back/controllers/product");
-// const { get } = require("../../back/routes/product");
-
-// let productData = [];
-
-// const fetchProduit = async () => {
-//     await fetch(``)
-// }
-
-// va chercher l'id du produit que j'affiche dans la page procuct
+// -------------------------------------------------------------
 let str = window.location.href;
 let url = new URL(str);
 let productId = url.searchParams.get("id"); // va chercher les paramètres de la route back-end js
@@ -19,7 +6,7 @@ let productId = url.searchParams.get("id"); // va chercher les paramètres de la
 let articleSolo = "";
 
 //--------------------------------------------------------------
-newArray();
+// newArray();
 //------------------------------------------------------------------------------------------------
 getArticleSolo();
 getSelectValue();
@@ -154,7 +141,7 @@ let basketQuantity = () => {
     }
     else {
         console.log("retourn valeur depuis le else");
-        resultQuantity = valueJs.value;
+        resultQuantity = parseInt(valueJs.value); //--------------------------
         quantityOk = true;
         console.log(quantityOk + " : Quantité entree est ok");
         return resultQuantity, quantityOk;
@@ -189,13 +176,37 @@ async function articleStokage() {
         color : selectColor,
         quantity : resultQuantity
     }
-    
+
+    // c'est ici qu'il faut que je fixe mon intéret pour changer le... /!\
     if (arrayBasket){
         console.log("ok if pour après création truc muche");
         verifId_localStorage();
-        arrayBasket.push(articleJson);
-        localStorage.setItem("produit", JSON.stringify(arrayBasket));
+
+        if (colorInArray == true && idInArray == true){
+            console.log("couleur " + element.color + " et Id " + element.id + " sont vrai et va permettre de rajouter une quantité");
+            console.log("on est dans le deuxième if, donc return de la fonction marche");
+            // avec parseInt je permet la modification en qualité de chiffre car considéré comme une chaine de character...
+            // Opération si couleur et ID ok
+            console.log("ici cible de target id : " + targetID);
+            
+            console.log("ici cible de target id : " + targetID);
+            element.quantity = parseInt(element.quantity) + resultQuantity;
+            // localStorage.getItem(element.quantity);
+            console.log(element.quantity);
+            // localStorage.setItem(element.id, JSON.stringify(element.quantity));
+            
+            // arrayBasket.push(element.id);
+            targetID = window.localStorage.setItem("produit", JSON.stringify(arrayBasket));
+            
+            console.log("ici cible de target id : " + targetID);
+        }
+
+        else {
+            arrayBasket.push(articleJson);
+            localStorage.setItem("produit", JSON.stringify(arrayBasket));
+        }
     }
+
     else {
         arrayBasket = [];
         arrayBasket.push(articleJson);
@@ -206,7 +217,8 @@ async function articleStokage() {
     console.log(arrayBasket.id + " : arraBasket.id apres le else de stockageArticle.");
 
     return arrayBasket;
-};  
+};
+
 // articleStokage();
 console.table(arrayBasket);
 //-----------------------------------------------------------------------------------------------
@@ -217,7 +229,6 @@ console.table(arrayBasket);
 //     }
 //     return productId
 // };
-
 
 // let target_arrayId = localStorage.getItem();
 // var el = 6; //Elément à rechercher
@@ -248,35 +259,55 @@ async function IfValueInclude() {
 //----------------------------
 
 // fonction de vérification si iD est déjà présent dans le panier
+// const resultIDANDColor = arrayBasket.find();
 
 let colorInArray = false;
 let idInArray = false;
 async function verifId_localStorage() {
     console.log(productId);
+
     // methode pour parcourir un tableau et demander un retour précis
-    arrayBasket.forEach(element => {
-        let resultatVerif = colorInArray;
-        let resultatVerifId = idInArray;
+    for (element of arrayBasket) {
+        console.log(element);
+        // return element;
+    }
+        // si produit id et couleur sont stocké dans le tableau 
         if (productId === element.id && selectColor === element.color){
             console.log(element.color + " : Cet article ID ce trouve déjà dans le panier");
             alert(`article ${element.id} existe ! ${element.color}`);
             colorInArray = true;
             idInArray = true;
-
+            console.log("product ID = " + productId + " et Selectcolor = " + selectColor);
+            console.log("element.id = " + element.id + " et element.color = " + element.color);
+            console.log("result quantity = " + resultQuantity + " element.quantity = " + element.quantity);
+            
+            // si true id et color
             if (colorInArray == true && idInArray == true){
-                console.log("couleur " + element.color + " et Id " + element.id + " sont vrai et va pemerttre de rajouter une quantité");
+                console.log("couleur " + element.color + " et Id " + element.id + " sont vrai et va permettre de rajouter une quantité");
+                targetID = window.localStorage.getItem(element.id);
 
-               
+                console.log("color = " + colorInArray + " id = " + idInArray);
+                console.log("ici cible de target id : " + targetID);
+
+                //création et opération quantité
+                // let quantity_elt = element.quantity;
+                // let newQuantity = "";
                 
-                let newEntree = JSON.parse(localStorage["produit"]);
+                // console.log("newQuantity vaut av : " + newQuantity + " et quantity_elt_id vaut : " + quantity_elt);
+                // // newQuantity + quantity_elt;
                 
-                newEntree = resultQuantity + element.quantity;
-                console.log(resultQuantity + "..." + newEntree);
+                // console.log("newQuantity vaut ap : " + newQuantity);
+                // console.log("resultQuantity vaut av : " + resultQuantity);
                 
-                localStorage["produit"] = JSON.stringify(newEntree)
-                // stopPropagation();
+                // // arrayBasket.push()
+                // // mémorisation
+                // // localStorage.setItem("produit", JSON.stringify(resultQuantity));
+                // console.log(element.quantity);
+                // console.log(resultQuantity);
+                // console.log(newQuantity);
+                
+                // return newQuantity;
             }
-
         }
 
         else {
@@ -284,22 +315,16 @@ async function verifId_localStorage() {
             alert("Aucun article de merde avec une nouvelle couleur !");
             colorInArray = false;
             idInArray = false;
+
+            // arrayBasket.push(articleJson);
+            // localStorage.setItem("produit", JSON.stringify(arrayBasket));
         }
-
-        return 
-    })
-
-    console.log(colorInArray + " valeur de couleur");
-    console.log(idInArray + " valeur de ID");
+        
+        
 };
 
 console.log(colorInArray + " valeur de couleur");
 console.log(idInArray + " valeur de ID");
-
-
-
-
-
 
 //----------------------------------------------------------------------------------------------
 console.log(productId + " : id du produit");
@@ -411,3 +436,17 @@ let click = 0;
 //     ClearProductId();
 //     });
 console.table(arrayBasket);
+
+function calculTest () {
+    let nombre1 = "";
+    let nombre2 = "";
+    let resultTest =""
+    resultTest = nombre1 + nombre2
+
+    console.log(resultTest);
+    return resultTest; 
+} 
+
+window.addEventListener('click', calculTest);
+
+	
