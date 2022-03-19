@@ -18,19 +18,8 @@ select_elt = option_elt;
 // Variable getSelectValue
 let selectColor = "";
 let colorOk = false;
+/* -----------------*/
 
-// Variable basketQuantity()
-let quantityOk = false;
-const valueJs = document.querySelector('#quantity'); // attribution qui pointe vers id de input
-let resultQuantity = "";
-
-// variable articleStokage()
-let colorInArray = false;
-let idInArray = false;
-
-//------------------------------------------------------------------------------------------------
-// variable lecture du stringify articleJson/articleSolo/produit
-let arrayBasket = JSON.parse(localStorage.getItem("produit"));
 
 //------------------------------------------------------------------------------------------------
 /* Lancement des fonctions */
@@ -126,13 +115,6 @@ async function displayArticleSolo(articleSolo) {
 //------------------------------------------------------------------------------------------------
 //  fonction sélection de couleur et retourne sa valeur 
 //------------------------------------------------------------------------------------------------
-/* 
-    - Créé une variable temp qui cible l'ID colors
-    - Sur intéraction du clic, sur l'élément html select_elt, 
-        -> - attribue la valeur couleur depuis la data (e)
-            -> lance condition si la selection couleur est vrai ou fausse;
-*/
-//------------------------------------------------------------------------------------------------
 function getSelectValue(selectId) {
     let select_elt = document.getElementById("colors"); // cible le select color
     
@@ -146,22 +128,27 @@ function getSelectValue(selectId) {
         }
         else {
             colorOk = false;
+            // alert(`Veuillez choisir une couleur avant de valider l'ajout de votre article ${articleSolo.name}`);
+            // console.log("la couleur vaut null " + colorOk);
             return selectColor, colorOk;
         }
     })
 };
 
-//------------------------------------------------------------------------------------------------
-//  fonction quantité saisie
-//------------------------------------------------------------------------------------------------
-/*  Vérifie :
-    ->  - la valeur quantité saisie est = 0 (quantityOk = false)
-        - la valeur  quantité saisie > 100 (quantityOk = false)
-        - sinon return booléen quantityOk = true
-*/ 
-//------------------------------------------------------------------------------------------------
+// console.log(selectColor + " cible selectColor " + colorOk + " etat couleur");
+
+
+/* *********************
+fonction valueJs = 0
+*/
+let quantityOk = false;
+const valueJs = document.querySelector('#quantity'); // attribution qui pointe vers id de input
+// console.log(valueJs.value);
+let resultQuantity = "";
 let basketQuantity = () => {
 
+    // console.log(valueJs.value);
+    
     if (valueJs.value == 0) {
         quantityOk = false;
         alert(`N'oubliez pas de choisir le nombre de ${articleSolo.name} que vous souhaitez avant de l'ajouter au panier.`);
@@ -185,17 +172,27 @@ let basketQuantity = () => {
 
 
 // -------------------------------------------------------------------------------------------------------
-//  fonction stokage des données ID / Color / Quantité
+async function newArray(arrayBasket) {
+    if (arrayBasket == null) {
+        arrayBasket = new Array();
+        
+        return arrayBasket;
+    }
+};
+
+// console.log(arrayBasket);
+
+
+// let val = localStorage.getItem("articleJson");
+// let articleJson = JSON.parse(val);
+let colorInArray = false;
+let idInArray = false;
+
+let arrayBasket = JSON.parse(localStorage.getItem("produit"));
+// let arrayBasket = [];
 // -------------------------------------------------------------------------------------------------------
-/*  
-* fonction appelé dans...
-    - Création objet (id, color et quantity)
-        ->  vérification si tableau existe, sinon le créer 
-            ->  initialiser la recherche .find (si id et couleur du tableau vaut la sélection couleur et id du produit)
-                ->  si findArticle est vrai
-                -   nouvelle valeur quantité, sinon créé une nouvelle entrée au tableau existant
-*/ 
-// -------------------------------------------------------------------------------------------------------
+// fonction stokage des données ID / Color / Quantité
+
 async function articleStokage() {
     console.log("lancement de la function articleStockage()");
     let articleJson = {
@@ -203,39 +200,49 @@ async function articleStokage() {
         color : selectColor,
         quantity : resultQuantity
     }
-    // Si tableau existe
+    
+    // let idAndColor_ok = false;
+    // c'est ici qu'il faut que je fixe mon intéret pour changer le... /!\
     if (arrayBasket){
         console.log("array existe ! passse à la condition suivante");          
         console.log(productId);
+        
 
-        // initialiser le .find qui va trouver l'article
-        const findArticle = arrayBasket.find((element) => element.id === productId && element.color === selectColor);
-            console.log("article coloret id trouvé");
-
+           // initialiser le .find qui va trouver l'article
+           const findArticle = arrayBasket.find(
+               (element) => element.id === productId && element.color === selectColor);
+                console.log("article coloret id trouvé");
             // si produit trouvé avec id et color pareil
             if (findArticle) {
-                console.log(" color trouvé");
+                // findSameProduct = true;
+                // console.log("comparatif ok id/color user vs id/color element: array[index].color = " + arrayBasket[index].color + element.color);
+                // // console.log("id and color = " + idAndColor_ok);
+                    console.log(" color trouvé");
+                    // console.log(index);
 
                 // check quantité + opération ajout
-                // console.log("quantité result au post new = " + resultQuantity + " et quantité stocké dans arraybasket quantity = " + findArticle.quantity);
+                console.log("quantité result au post new = " + resultQuantity + " et quantité stocké dans arraybasket quantity = " + findArticle.quantity);
+                
+                // arrayBasket.quantity = element.quantity + resultQuantity;
                 findArticle.quantity += resultQuantity; 
                 
-                // memorisation nouvelle quantité en version json (via stringify, (utilse parse pour le lire en html après))
+                // memorisation nouvelle quantité
                 localStorage.setItem("produit", JSON.stringify(arrayBasket));
                 console.log("result final que je vais post" + resultQuantity);
                 
             }
-
-            // sinon, si id et color différent, ajout du produit au tableau
+            // si id ok mais couleur diff
             else {
+                // findSameProduct = true;
                 console.log("je suis un nouvel article, avec le même id mais pas la même color");
+                // console.log(index);
+                // console.log("je suis donc le else if id ok mais couleur dif");
                 arrayBasket.push(articleJson);
                 localStorage.setItem("produit", JSON.stringify(arrayBasket));
             }     
 
     } // fin array exist   
 
-    // sinon si tableau n'existe pas, le créer et ajouter le premier produit
     else {
         console.log("array dont exist !");
         arrayBasket = [];
@@ -247,49 +254,79 @@ async function articleStokage() {
 
 console.log(colorInArray + " valeur de couleur");
 console.log(idInArray + " valeur de ID");
+
+//----------------------------------------------------------------------------------------------
 console.log(productId + " : id du produit");
 
 // -------------------------------------------------------------------------------------------------------
 // Fonction add to cart et envoie de donnée via localStorage avancé
 //--------------------------------------------------------------------------------------------------------
-/*
-    A l'évènement du clic qui cible id "buttonAddToCart" réalise :
-        -   appel du script qui vérifie la quantité entrée de l'utilisateur
-            -> si variable boo color et quantité sont true
-                -   appel du script articleStorage(), coeur de l'ajout article en fonction de ;
-                    tableau existe, id et color idem à choix utilisateur 
-                - sinon popup d'information et var boo = false
+// appel de script addToCard
 
-    nb : ajouter popup confirmation qui prend en compte trois choix :
-        * rester sur cette et choisir une autre couleur/quantié pour l'article
-        * revenir sur la page des produits (index)
-        * se rendre au panier (possibilité de ++/-- produit ou de le supprimer et formulaire)
-
-*/
-//--------------------------------------------------------------------------------------------------------
+// fonction d'appel script pour ajout au panier
 const buttonAddToCart = document.getElementById('addToCart');
+getSelectValue(); // renvoie la couleur choisie
+
 // event au click ajout au panier
 buttonAddToCart.addEventListener('click', () => {
-    basketQuantity(); // renvoie la quantité d'article choisi
-    getSelectValue(); // renvoie la couleur choisie
+    basketQuantity(); // fonction qui transmet la quantité d'article choisi
     
     console.table(arrayBasket);
         if (colorOk === true && quantityOk === true) {
-            alert(`Vrai Article ${articleSolo.name} ajouté à votre panier !`); // popup rapide d'information à améliorer
-            articleStokage(); // coeur de l'action
+            alert(`Vrai Article ${articleSolo.name} ajouté à votre panier !`);
+            articleStokage(); // stocke les données objet Json pour le restituer à la lecture sur les autres pages
 
             console.table(arrayBasket);
             console.log(" Etat couleur : " + colorOk );
             console.log(" Etat quantité : " + colorOk );
         }
-
-        else {
+        else if (colorOk === false || quantityOk === false) {
             alert(`Veuillez choisir une couleur avant de valider l'ajout de votre article ${articleSolo.name}`);
             console.log(" Etat couleur : " + colorOk );
             console.log(" Etat quantité : " + colorOk );
         }
 
+        else {
+            console.log("je suis le else... ERROR 404 ! Prévenez un développeur Web pour réparer cette erreur ");
+        }
         return arrayBasket;
 });
 
+//--------------------------------------------fonction vide array 
+// window.addEventListener('click', () => {
+//     arrayBasket.splice(0, 100);
+//     localStorage.clear();
+//     console.log(arrayBasket);
+// });
+//--------------------------------------------------------------
+
+//--------------------------------------------------------------
+// // Affichetab_test();
+// document.addEventListener('DOMContentLoaded', function() {
+//     if (arrayBasket == null) {
+//         console.log("vaut null array basket");
+//         arrayBasket = new Array();
+//     }
+//     else if (arrayBasket) {
+//         console.table(arrayBasket);
+//     }
+//     return arrayBasket;
+// });
+//-----------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
+// document.addEventListener('DOMContentLoaded', function() {
+//     ClearProductId();
+//     });
 console.table(arrayBasket);
+
+// function calculTest () {
+//     let nombre1 = "";
+//     let nombre2 = "";
+//     let resultTest =""
+//     resultTest = nombre1 + nombre2
+
+//     console.log(resultTest);
+//     return resultTest; 
+// }; 
+
+// window.addEventListener('click', calculTest);
