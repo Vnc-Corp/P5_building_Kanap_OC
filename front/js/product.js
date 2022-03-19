@@ -35,6 +35,9 @@ let maxQuantity = 100;
 // variable lecture du stringify articleJson/articleSolo/produit
 let arrayBasket = JSON.parse(localStorage.getItem("produit"));
 
+
+
+
 //------------------------------------------------------------------------------------------------
 /* Lancement des fonctions */
 //------------------------------------------------------------------------------------------------
@@ -99,6 +102,8 @@ async function getArticleSolo() {
         
     Nb :    colorSolo devient la référence des couleurs à afficher en boucle en fonction de id produit
 */
+
+const contentDisplayArticle = displayArticleSolo;
 //------------------------------------------------------------------------------------------------
 async function displayArticleSolo(articleSolo) {
 
@@ -230,15 +235,20 @@ async function articleStokage() {
                 // vérification de la quantité maximale
                 if (findArticle.quantity > maxQuantity) {
                     console.log("je suis supérieur à 100 : " + findArticle.quantity);
-                    alert(`Désolé, votre panier dépasse la quantité maximum pour ce produit. Celui-ci sera donc initialiser à 100 dans votre panier.`);
+                    // alert(`Désolé, votre panier dépasse la quantité maximum pour ce produit. Celui-ci sera donc limité à 100 dans votre panier.`);
+                    
                     // réinitialisation à 100, valeur de ma variable déclarée
                     findArticle.quantity = maxQuantity;
                         console.log("je réinitialise à 100 : " + findArticle.quantity);
+
+                        displayPopUp_2();
                     }
                     
                     // voué à disparaitre
                     else {
                         console.log("Je suis inférieur à 100... : " + findArticle.quantity);
+                        displayPopUp_1();
+                        console.log(" je suis pop 2");
                     }
 
                 // memorisation nouvelle quantité en version json (via stringify, (utilse parse pour le lire en html après))
@@ -246,23 +256,27 @@ async function articleStokage() {
                 console.log("result final que je vais post" + resultQuantity);
                 
             }
-
+            
             // sinon, si id et color différent, ajout du produit au tableau
             else {
                 console.log("je suis un nouvel article, avec le même id mais pas la même color");
                 arrayBasket.push(articleJson);
                 localStorage.setItem("produit", JSON.stringify(arrayBasket));
+                displayPopUp_1();
             }     
+            
+        } // fin array exist   
+        
+        // sinon si tableau n'existe pas, le créer et ajouter le premier produit
+        else {
+            console.log("array dont exist !");
+            arrayBasket = [];
+            arrayBasket.push(articleJson);
+            localStorage.setItem("produit", JSON.stringify(arrayBasket));
+            console.log(arrayBasket);
 
-    } // fin array exist   
-
-    // sinon si tableau n'existe pas, le créer et ajouter le premier produit
-    else {
-        console.log("array dont exist !");
-        arrayBasket = [];
-        arrayBasket.push(articleJson);
-        localStorage.setItem("produit", JSON.stringify(arrayBasket));
-        console.log(arrayBasket);
+            displayPopUp_1();
+            console.log(" je suis pop 3");
     }
     return 
 };
@@ -282,12 +296,6 @@ console.log(productId + " : id du produit");
                 -   appel du script articleStorage(), coeur de l'ajout article en fonction de ;
                     tableau existe, id et color idem à choix utilisateur 
                 - sinon popup d'information et var boo = false
-
-    nb : ajouter popup confirmation qui prend en compte trois choix :
-        * rester sur cette et choisir une autre couleur/quantié pour l'article
-        * revenir sur la page des produits (index)
-        * se rendre au panier (possibilité de ++/-- produit ou de le supprimer et formulaire)
-
 */
 //--------------------------------------------------------------------------------------------------------
 const buttonAddToCart = document.getElementById('addToCart');
@@ -298,9 +306,8 @@ buttonAddToCart.addEventListener('click', () => {
     
     console.table(arrayBasket);
         if (colorOk === true && quantityOk === true) {
-            alert(`Vrai Article ${articleSolo.name} ajouté à votre panier !`); // popup rapide d'information à améliorer
+            // alert(`Vrai Article ${articleSolo.name} ajouté à votre panier !`); // popup rapide d'information à améliorer
             articleStokage(); // coeur de l'action
-
             console.table(arrayBasket);
             console.log(" Etat couleur : " + colorOk );
             console.log(" Etat quantité : " + colorOk );
@@ -315,7 +322,41 @@ buttonAddToCart.addEventListener('click', () => {
         return arrayBasket;
 });
 
-console.table(arrayBasket);
+// -------------------------------------------------------------------------------------------------------
+//  fonction display PopUp version 1 et version 2
+/*
+    (i) 
+    ->  Version 1
+        -   affiche un message classique informant de l'ajout de l'article (quantity/name/color)
+    
+    ->  Version 2
+        -   affiche un message secondaire prenant en compte la quantité maximal du produit enregistré
+            dans le panier
+
+    Nb: Présent (3x) dans articleStokage() pour s'afficher après vérification multiple 
+*/
+//--------------------------------------------------------------------------------------------------------
+
+//version 1
+const displayPopUp_1 =() =>{
+
+        // affiche commande normale
+        if(window.confirm(`Votre commande de ` +  resultQuantity + ` ${articleSolo.name} de couleur ` + selectColor + ` est ajoutée au panier.
+Pour consulter votre panier, cliquez sur OK`)){
+            window.location.href ="cart.html";
+        }    
+};
+
+// version 2
+const displayPopUp_2 =() =>{
+
+    // affiche commande secondaire quiprend en compte la quantité maximal dépassée
+    if(window.confirm(`Votre commande de ` +  resultQuantity + ` ${articleSolo.name} de couleur ` + selectColor + ` dépasse la quantié maximal (100).
+Votre panier sera donc limité à 100 articles pour ce produit.
+Pour consulter votre panier, cliquez sur OK`)){
+        window.location.href ="cart.html";
+        }
+};
 
 
 
@@ -360,3 +401,6 @@ console.table(arrayBasket);
 // window.addEventListener('click', () => {
 //     // checkQuantityMax();
 // });
+console.table(arrayBasket);
+
+
