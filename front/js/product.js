@@ -1,3 +1,5 @@
+// *****************************************************************************************************************
+// *****************************************************************************************************************
 //------------------------------------------------------------------------------------------------
 /* récupération de id du produit, suite au clic sur la page index  sur un produit */
 //------------------------------------------------------------------------------------------------
@@ -24,10 +26,11 @@ let quantityOk = false;
 const valueJs = document.querySelector('#quantity'); // attribution qui pointe vers id de input
 let resultQuantity = "";
 
-// variable articleStokage()
+// Variable articleStokage()
 let colorInArray = false;
 let idInArray = false;
-
+// -------------------- variable qui limite la quantité maximale des article
+let maxQuantity = 100;
 //------------------------------------------------------------------------------------------------
 // variable lecture du stringify articleJson/articleSolo/produit
 let arrayBasket = JSON.parse(localStorage.getItem("produit"));
@@ -38,8 +41,11 @@ let arrayBasket = JSON.parse(localStorage.getItem("produit"));
 getArticleSolo();
 getSelectValue();
 
+// *****************************************************************************************************************
+// *****************************************************************************************************************
+
 //------------------------------------------------------------------------------------------------
-//  function getArticleSolo
+//  fonction getArticleSolo
 //------------------------------------------------------------------------------------------------
 /* 
     - Cette fonction permet de récupérer les données de l'api qui contient les produit à afficher.
@@ -70,7 +76,7 @@ async function getArticleSolo() {
 };
 
 //------------------------------------------------------------------------------------------------
-//  function displayArticleSolo
+//  fonction displayArticleSolo
 //------------------------------------------------------------------------------------------------
 /* 
     - Fonction qui va permettre d'afficher les informations récupérées concernant l'article ID
@@ -78,15 +84,20 @@ async function getArticleSolo() {
     - création variable temp qui créé et récupère la valeur contenu dans le dataAPI(articleSolo)
 
         partie 1
-        -> Titre
-        -> Prix
-        -> description
+            -> Titre
+            -> Prix
+            -> description
 
         partie 2
-        -> image + alt 
+            -> image + alt 
 
         partie 3
-        -> initialisation des couleurs pour chaue article
+            -> initialisation des couleurs pour chaue article
+            - injection array color en fonction du produit puis boucle sur la data en sélectionnant le tableau des couleurs
+            - cible l'ID du html "select"
+            - injection de html option et sa valeur pour l'event au clic
+        
+    Nb :    colorSolo devient la référence des couleurs à afficher en boucle en fonction de id produit
 */
 //------------------------------------------------------------------------------------------------
 async function displayArticleSolo(articleSolo) {
@@ -105,11 +116,7 @@ async function displayArticleSolo(articleSolo) {
 
     // partie 3
     /*
-    - injection array color en fonction du produit 
-      puis boucle sur la data en sélectionnant le tableau des couleurs
-    - cible l'ID du html "select"
-    - injection de html option et sa valeur pour l'event au clic
-      colorSolo devient la référence des couleurs à afficher en boucle en fonction des tabl[] produit
+    
     */
     option_elt = articleSolo.colors.map ((colorSolo) => {
         
@@ -119,8 +126,6 @@ async function displayArticleSolo(articleSolo) {
         `
         // console.log(option_elt);
     }) 
-    return select_elt;
-
 };
 
 //------------------------------------------------------------------------------------------------
@@ -168,13 +173,16 @@ let basketQuantity = () => {
         console.log("ton truc est égal à zéro depuis if");
         console.log(quantityOk);
     }
+
     else if (valueJs.value > 100) {
         quantityOk = false;
         alert(`Nous sommes désolé de ne pas pouvoir vous vendre ${valueJs.value} ${articleSolo.name}. Nous limitons chaque article à 100 par client...`);
         console.log("plus de 100, alerte au gogole");
         console.log(quantityOk);
     }
+
     else {
+
         console.log("retourn valeur depuis le else");
         resultQuantity = parseInt(valueJs.value); //--------------------------
         quantityOk = true;
@@ -217,9 +225,22 @@ async function articleStokage() {
                 console.log(" color trouvé");
 
                 // check quantité + opération ajout
-                // console.log("quantité result au post new = " + resultQuantity + " et quantité stocké dans arraybasket quantity = " + findArticle.quantity);
-                findArticle.quantity += resultQuantity; 
+                findArticle.quantity += resultQuantity;
                 
+                // vérification de la quantité maximale
+                if (findArticle.quantity > maxQuantity) {
+                    console.log("je suis supérieur à 100 : " + findArticle.quantity);
+                    alert(`Désolé, votre panier dépasse la quantité maximum pour ce produit. Celui-ci sera donc initialiser à 100 dans votre panier.`);
+                    // réinitialisation à 100, valeur de ma variable déclarée
+                    findArticle.quantity = maxQuantity;
+                        console.log("je réinitialise à 100 : " + findArticle.quantity);
+                    }
+                    
+                    // voué à disparaitre
+                    else {
+                        console.log("Je suis inférieur à 100... : " + findArticle.quantity);
+                    }
+
                 // memorisation nouvelle quantité en version json (via stringify, (utilse parse pour le lire en html après))
                 localStorage.setItem("produit", JSON.stringify(arrayBasket));
                 console.log("result final que je vais post" + resultQuantity);
@@ -243,11 +264,13 @@ async function articleStokage() {
         localStorage.setItem("produit", JSON.stringify(arrayBasket));
         console.log(arrayBasket);
     }
+    return 
 };
 
 console.log(colorInArray + " valeur de couleur");
 console.log(idInArray + " valeur de ID");
 console.log(productId + " : id du produit");
+
 
 // -------------------------------------------------------------------------------------------------------
 // Fonction add to cart et envoie de donnée via localStorage avancé
@@ -293,3 +316,47 @@ buttonAddToCart.addEventListener('click', () => {
 });
 
 console.table(arrayBasket);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//*************************************
+// test function extern maxquantity
+//*************************************
+// problème, je ne peux pas intervenir sur la quantity 
+
+
+// async function checkQuantityMax(arrayBasket) {
+//     // vérification de la quantité maximale
+//     if (arrayBasket.quantity > maxQuantity) {
+//         console.log("je suis supérieur à 100 : " + arraybasket.quantity);
+//         alert(`Désolé, votre panier dépasse la quantité maximum pour ce produit. Celui-ci sera donc initialiser à 100 dans votre panier`);
+//         // réinitialisation à 100, valeur de ma variable déclarée
+//         arraybasket.quantity = maxQuantity;
+//             console.log("je réinitialise à 100 : " + arraybasket.quantity);
+//         }
+
+//         else {
+//             console.log("Je suis inférieur à 100... : " + arraybasket.quantity);
+//         }
+    
+// };
+
+// window.addEventListener('click', () => {
+//     // checkQuantityMax();
+// });
