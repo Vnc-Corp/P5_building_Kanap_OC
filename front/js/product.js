@@ -1,7 +1,7 @@
 // *****************************************************************************************************************
 // *****************************************************************************************************************
 //------------------------------------------------------------------------------------------------
-/* récupération de id du produit, suite au clic sur la page index  sur un produit */
+/* récupération de id du produit, suite au clicButton de la page index d'un produit */
 //------------------------------------------------------------------------------------------------
 let str = window.location.href;
 let url = new URL(str);
@@ -57,7 +57,17 @@ getSelectValue();
     - renvoie fonction displayArticle avec pour param "articleSolo"
     - ajout catch error si l'api n'est pas joignagle
 */
-//------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------// -------------------------------------------------------------------------------------------------------
+//  Fonction asynchrone pour récupérer données API et faire un retour
+/*
+    -   va chercher l'accès à l'API
+    -   promesse avec retour en json
+    -   promesse avec transmission donnée à response
+    -   retour si l'API distant n'est pas disponible
+    
+    Nb : exploite le tableau à l'extérieur en devenant une valeur externe dans la variable articles
+*/
+//--------------------------------------------------------------------------------------------------------
 async function getArticleSolo() {
     console.log(productId);
     await fetch("http://localhost:3000/api/products/" + productId) 
@@ -216,6 +226,7 @@ async function articleStokage() {
         color : selectColor,
         quantity : resultQuantity
     }
+    
     // Si tableau existe
     if (arrayBasket){
         console.log("array existe ! passse à la condition suivante");          
@@ -223,7 +234,6 @@ async function articleStokage() {
 
         // initialiser le .find qui va trouver l'article
         const findArticle = arrayBasket.find((element) => element.id === productId && element.color === selectColor);
-            console.log("article coloret id trouvé");
 
             // si produit trouvé avec id et color pareil
             if (findArticle) {
@@ -325,7 +335,7 @@ buttonAddToCart.addEventListener('click', () => {
 // -------------------------------------------------------------------------------------------------------
 //  fonction display PopUp version 1 et version 2
 /*
-    (i) 
+    (i) Deux fonctions popUp indépendante pour afficher un retour après clic et vérification général (ref articleStokage())
     ->  Version 1
         -   affiche un message classique informant de l'ajout de l'article (quantity/name/color)
     
@@ -336,13 +346,13 @@ buttonAddToCart.addEventListener('click', () => {
     Nb: Présent (3x) dans articleStokage() pour s'afficher après vérification multiple 
 */
 //--------------------------------------------------------------------------------------------------------
-
 //version 1
 const displayPopUp_1 =() =>{
 
-        // affiche commande normale
-        if(window.confirm(`Votre commande de ` +  resultQuantity + ` ${articleSolo.name} de couleur ` + selectColor + ` est ajoutée au panier.
-Pour consulter votre panier, cliquez sur OK`)){
+    // affiche commande normale
+    if(window.confirm(`Votre commande de ` +  resultQuantity + ` ${articleSolo.name} de couleur ` + selectColor + ` est ajoutée au panier.
+Pour consulter votre panier, cliquez sur OK`))
+        {
             window.location.href ="cart.html";
         }    
 };
@@ -353,8 +363,9 @@ const displayPopUp_2 =() =>{
     // affiche commande secondaire quiprend en compte la quantité maximal dépassée
     if(window.confirm(`Votre commande de ` +  resultQuantity + ` ${articleSolo.name} de couleur ` + selectColor + ` dépasse la quantié maximal (100).
 Votre panier sera donc limité à 100 articles pour ce produit.
-Pour consulter votre panier, cliquez sur OK`)){
-        window.location.href ="cart.html";
+Pour consulter votre panier, cliquez sur OK`))
+        {
+            window.location.href ="cart.html";
         }
 };
 

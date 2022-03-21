@@ -3,6 +3,7 @@ let str = window.location.href;
 let url = new URL(str);
 let productId = url.searchParams.get("id"); // va chercher les paramètres de la route back-end js
 
+
 let articleSolo = "";
 
 //--------------------------------------------------------------

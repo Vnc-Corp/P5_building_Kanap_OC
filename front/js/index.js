@@ -69,5 +69,5 @@ function displayArticles(articles) {
             console.table(item.altTxt);
             console.table(item.name);
             console.table(item.description);
-        });    
-}
+        })    
+};
