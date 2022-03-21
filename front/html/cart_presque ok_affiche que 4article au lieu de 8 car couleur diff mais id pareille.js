@@ -33,7 +33,7 @@ async function getProduct_info() {
 
 //------------------------------------------------------------------------------------------------
 // fonction d'affichage panier
-function displayproductInfo(productInfo, productLocalStorage) {
+async function displayproductInfo(productInfo, productLocalStorage) {
   console.log(productLocalStorage[0]);
   
   // if (productInfo.id === productLocalStorage) {
@@ -43,36 +43,37 @@ function displayproductInfo(productInfo, productLocalStorage) {
       // }
       
       
+      // const producCartLocale = productLocalStorage.map((productLocalStorage) => {
       
-      const productCart = productInfo.map((productItem) => {
-        // console.log(productItem.name);
-        // console.log(productItem._id);
-        // console.log("id de data api " + productItem._id);
+      const productCartInfo = productLocalStorage.map((cartDonnee) => {
+      const find_info_ID = productInfo.find((cartInfo) => cartInfo._id === cartDonnee.id);
+
+        // console.log(cartDonnee.name);
+        // console.log(cartDonnee._id);
         
         // initialiser le .find qui va trouver l'article
         
-        const findBasketID = productLocalStorage.find((basket_e) => basket_e.id === productItem._id);
-        // const findProductID = productItem.find((product_e) => product_e.id);
-          if (findBasketID) {
-            console.log("IF - ID du Produit du local : " + findBasketID.id);
-            console.log("! trouvé ! dans find local storage " + productItem._id);
-
-            document.getElementById("cart__items").innerHTML += `
-            <article class="cart__item" data-id="${findBasketID.id}" data-color="${productItem.color}">
-                  <div class="cart__item__img">
-                    <img src="${productItem.imageUrl}" alt="${productItem.altTxt}>
+        // const findProductID = cartDonnee.find((product_e) => product_e.id);
+        if (find_info_ID) {
+          console.log("IF - ID du Produit du local : " + find_info_ID._id);
+          console.log("! trouvé ! dans find local storage " + cartDonnee.id);
+          
+          document.getElementById("cart__items").innerHTML += `
+          <article class="cart__item" data-id="${cartDonnee.id}" data-color="${cartDonnee.color}">
+          <div class="cart__item__img">
+          <img src="${find_info_ID.imageUrl}" alt="${find_info_ID.altTxt}>
                   </div>
                   <div class="cart__item__content">
                     <div class="cart__item__content__description">
-                      <h2>${productItem.name}</h2>
-                      <p>${findBasketID.color}</p>
-                      <p>${productItem.price} €</p>
+                      <h2>${find_info_ID.name}</h2>
+                      <p>${cartDonnee.color}</p>
+                      <p>${find_info_ID.price} €</p>
                     </div>
-
+                    
                     <div class="cart__item__content__settings">
                       <div class="cart__item__content__settings__quantity">
                         <p>Qté : </p>
-                        <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${findBasketID.quantity}">
+                        <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${cartDonnee.quantity}">
                       </div>
                       <div class="cart__item__content__settings__delete">
                         <p class="deleteItem">Supprimer</p>
@@ -85,14 +86,15 @@ function displayproductInfo(productInfo, productLocalStorage) {
             console.log(" ...............................");
           } else {
             console.log("pas trouvé dans find local storage");
-            console.log("else - ID du Produit du local : " + findBasketID);
-            console.log("else - ID du Produit du prod info : " + productItem._id);
+            console.log("else - ID du Produit du local : " + find_info_ID);
+            console.log("else - ID du Produit du prod info : " + cartDonnee._id);
             
           }
-      })    
-};
-
-
+        })    
+      // })
+      };
+      
+      
       // console.log(" Et ID du panier : " + findProductID.id);
       
 

@@ -8,7 +8,7 @@ let url = new URL(str);
 let productId = url.searchParams.get("id"); // va chercher les paramètres de la route back-end js
 
 //------------------------------------------------------------------------------------------------
-/* Création des variables */
+// Création des variables 
 //------------------------------------------------------------------------------------------------
 // variable articleSolo() 
 let articleSolo = "";
@@ -46,7 +46,6 @@ getSelectValue();
 
 // *****************************************************************************************************************
 // *****************************************************************************************************************
-
 //------------------------------------------------------------------------------------------------
 //  fonction getArticleSolo
 //------------------------------------------------------------------------------------------------
@@ -57,17 +56,7 @@ getSelectValue();
     - renvoie fonction displayArticle avec pour param "articleSolo"
     - ajout catch error si l'api n'est pas joignagle
 */
-//------------------------------------------------------------------------------------------------// -------------------------------------------------------------------------------------------------------
-//  Fonction asynchrone pour récupérer données API et faire un retour
-/*
-    -   va chercher l'accès à l'API
-    -   promesse avec retour en json
-    -   promesse avec transmission donnée à response
-    -   retour si l'API distant n'est pas disponible
-    
-    Nb : exploite le tableau à l'extérieur en devenant une valeur externe dans la variable articles
-*/
-//--------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
 async function getArticleSolo() {
     console.log(productId);
     await fetch("http://localhost:3000/api/products/" + productId) 
@@ -226,7 +215,7 @@ async function articleStokage() {
         color : selectColor,
         quantity : resultQuantity
     }
-    
+
     // Si tableau existe
     if (arrayBasket){
         console.log("array existe ! passse à la condition suivante");          
