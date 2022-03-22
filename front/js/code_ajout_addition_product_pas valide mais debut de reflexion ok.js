@@ -9,12 +9,6 @@ let productLocalStorage = JSON.parse(localStorage.getItem("produit"));
 //affichage du panier
 console.table(productLocalStorage);
 
-// variable fonction calcul quantité total des produits
-let totalQuantity = 0;
-
-// variable fonction calcul prix total des produits
-let totalPrice = 0;
-
 
 //------------------------------------------------------------------------------------------------
 //  Appel de fonctions
@@ -42,9 +36,6 @@ async function displayCartHTML () {
   const productInfo = await getProduct_info();
   if (productLocalStorage) {
     displayproductInfo(productInfo, productLocalStorage);
-    calculQuantity(productLocalStorage);
-    calculPrice(productLocalStorage, productInfo)
-
     // totalTTC(productInfo, productLocalStorage);
     console.log("Panier existe");
   }  else {
@@ -87,7 +78,7 @@ async function getProduct_info() {
 //------------------------------------------------------------------------------------------------
 async function displayproductInfo(productInfo, productLocalStorage) {
   
-  const productCartLocal = productLocalStorage.map((cartDonnee) => {
+  const productCartInfo = productLocalStorage.map((cartDonnee) => {
     const find_info_ID = productInfo.find((cartInfo) => cartInfo._id === cartDonnee.id);
 
       // initialiser le .find qui va trouver l'article
@@ -120,10 +111,29 @@ async function displayproductInfo(productInfo, productLocalStorage) {
           </div>
         </article>
       ` // fin innerHTML
-
       console.log(" ...............................");
-    }
 
+      // injection total au DOM
+      // document.getElementById("cart__price").innerHTML += `
+      
+      // `
+      
+      let totalQuantity = 0;
+      let totalPrice = 0;
+      
+      totalQuantity = productLocalStorage.map((cartQuantity) => {
+      totalPrice = cartQuantity.quantity * find_info_ID.price;  
+      cartQuantity.quantity += cartQuantity.quantity;
+
+      console.log("look here" + cartQuantity.quantity);
+      console.log("look here n2 : " + cartQuantity.price);
+
+      document.getElementById("totalQuantity").textContent = cartQuantity.quantity
+      document.getElementById("totalPrice").textContent = totalPrice;
+      })
+
+    }
+      
     else {
       alert(`ERROR : Impossible de vérifier les ID de API : ${cartInfo._id} et de localStorage : ${cartDonnee.id}`)
       console.log(`ERROR : Impossible de vérifier les ID de API : ${cartInfo._id} et de localStorage : ${cartDonnee.id}`);
@@ -132,97 +142,6 @@ async function displayproductInfo(productInfo, productLocalStorage) {
   }) // fin .map  
      
 };
-
-
-//------------------------------------------------------------------------------------------------
-//  Fonction calcul total des quantités
-//------------------------------------------------------------------------------------------------
-/*
-    ->  vérifie que les données du locale storage sont disponible
-        ->  boucle pour chaque article (forEach/.map) présent dans le tableau
-            - incrément la variable qui sotke le total avec la quantité de chaque produit
-            - pointe vers l'élément html du DOM qui affichera la valeur totale des quantités
-    -> sinon : error locale storage inaccessible
-*/
-//------------------------------------------------------------------------------------------------
-function calculQuantity(productLocalStorage) {
-  console.log("function calcul lancé");
-  if (productLocalStorage) {
-    console.log("local storage du if lancé");
-
-    productLocalStorage.forEach(el => {
-      totalQuantity += el.quantity;
-        
-      console.log(el.quantity);
-      document.getElementById("totalQuantity").textContent = totalQuantity;
-
-      console.log(" ...............................");
-    });
-  } 
-  
-  else {
-    alert(`ERROR : Impossible d'accéder au tableau des produit en locale storage ${productLocalStorage}`)
-    console.log(`ERROR : Impossible d'accéder au tableau des produit en locale storage ${productLocalStorage}`);
-  }
-}
-
-
-
-//------------------------------------------------------------------------------------------------
-//  Fonction calcul des prix pour une somme totale
-//------------------------------------------------------------------------------------------------
-/*
-    ->  vérifie que les données du locale storage sont disponible
-        ->  boucle pour chaque article (forEach/.map) présent dans le tableau locale storage
-            ->  lancement de la méthode .find pour rechercher les id commun des deux tableau
-                afin de pouvoir récupérer les prix de chaque article de manière securisée
-                -> si retour est vrai (id coïencident)
-                  - incrémente la variable totale des prix avec le calcul suivant (pour chaque article):
-                  > multiplie la quantité récupéré du locale storage
-                    par le prix associé à l'article récupéré depuis la variable de données API
-                    
-                  - pointe vers l'élément html du DOM qui affichera la valeur totale des prix
-    -> sinon : error locale storage inaccessible
-*/
-//------------------------------------------------------------------------------------------------
-function calculPrice(productLocalStorage, productInfo) {
-  console.log("function calcul prix lancé");
-  console.log(productInfo);
-
-  if (productLocalStorage) {
-    console.log("local storage du if de calcul price lancé");
-
-    productLocalStorage.forEach(cartDataPriceQT => {
-
-      console.log(cartDataPriceQT);
-      const findPrice_ID = productInfo.find((cartPriceInfo) => cartPriceInfo._id === cartDataPriceQT.id);
-      if (findPrice_ID) {
-        console.log(findPrice_ID);
-        totalPrice += cartDataPriceQT.quantity * findPrice_ID.price; 
-        document.getElementById("totalPrice").textContent = totalPrice;
-        console.log(" ...............................");
-      }
-
-    }); // fin forEach
-  } 
-  
-  else {
-    alert(`ERROR : Impossible d'accéder au tableau des produit en locale storage ${productLocalStorage}`)
-    console.log(`ERROR : Impossible d'accéder au tableau des produit en locale storage ${productLocalStorage}`);
-  }
-
-};
-
-
-
-
-
-
-
-
-
-
-
 
 
 
