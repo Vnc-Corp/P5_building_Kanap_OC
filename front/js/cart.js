@@ -43,9 +43,9 @@ async function displayCartHTML () {
   if (productLocalStorage) {
     displayproductInfo(productInfo, productLocalStorage);
     calculQuantity(productLocalStorage);
-    calculPrice(productLocalStorage, productInfo)
+    calculPrice(productLocalStorage, productInfo);
+    quantityModifcation(productLocalStorage);
 
-    // totalTTC(productInfo, productLocalStorage);
     console.log("Panier existe");
   }  else {
     console.log("Panier VIDE");
@@ -92,8 +92,8 @@ async function displayproductInfo(productInfo, productLocalStorage) {
 
       // initialiser le .find qui va trouver l'article
       if (find_info_ID) {
-        console.log("IF - ID du Produit du local : " + find_info_ID._id);
-        console.log("! trouvé ! dans find local storage " + cartDonnee.id);
+        // console.log("IF - ID du Produit du local : " + find_info_ID._id);
+        // console.log("! trouvé ! dans find local storage " + cartDonnee.id);
         
         // injection au DOM
         document.getElementById("cart__items").innerHTML += `
@@ -122,6 +122,7 @@ async function displayproductInfo(productInfo, productLocalStorage) {
       ` // fin innerHTML
 
       console.log(" ...............................");
+      
     }
 
     else {
@@ -146,17 +147,17 @@ async function displayproductInfo(productInfo, productLocalStorage) {
 */
 //------------------------------------------------------------------------------------------------
 function calculQuantity(productLocalStorage) {
-  console.log("function calcul lancé");
+  // console.log("function calcul lancé");
   if (productLocalStorage) {
-    console.log("local storage du if lancé");
+    // console.log("local storage du if lancé");
 
     productLocalStorage.forEach(el => {
       totalQuantity += el.quantity;
         
-      console.log(el.quantity);
+      // console.log(el.quantity);
       document.getElementById("totalQuantity").textContent = totalQuantity;
 
-      console.log(" ...............................");
+      // console.log(" ...............................");
     });
   } 
   
@@ -186,21 +187,21 @@ function calculQuantity(productLocalStorage) {
 */
 //------------------------------------------------------------------------------------------------
 function calculPrice(productLocalStorage, productInfo) {
-  console.log("function calcul prix lancé");
-  console.log(productInfo);
+  // console.log("function calcul prix lancé");
+  // console.log(productInfo);
 
   if (productLocalStorage) {
-    console.log("local storage du if de calcul price lancé");
+    // console.log("local storage du if de calcul price lancé");
 
     productLocalStorage.forEach(cartDataPriceQT => {
 
-      console.log(cartDataPriceQT);
+      // console.log(cartDataPriceQT);
       const findPrice_ID = productInfo.find((cartPriceInfo) => cartPriceInfo._id === cartDataPriceQT.id);
       if (findPrice_ID) {
-        console.log(findPrice_ID);
+        // console.log(findPrice_ID);
         totalPrice += cartDataPriceQT.quantity * findPrice_ID.price; 
         document.getElementById("totalPrice").textContent = totalPrice;
-        console.log(" ...............................");
+        // console.log(" ...............................");
       }
 
     }); // fin forEach
@@ -219,9 +220,124 @@ function calculPrice(productLocalStorage, productInfo) {
 
 
 
+async function quantityModifcation(productLocalStorage) {
+  
+  const valueQuantityNow = document.querySelectorAll(".itemQuantity"); // affiche
+  let tempValue = 0;
+  console.log(tempValue);
+  
+  for (let index = 0; index < valueQuantityNow.length; index++) {
+    
+    // attribution valeur boucle de quatité de chaque article
+    tempValue = valueQuantityNow[index].value;
+
+    
+    
+    // marche que sur tous les produits
+    valueQuantityNow[index].addEventListener('click', (event) => {
+      console.log("je suis le click de add ev");
+      // productLocalStorage.quantity += valueQuantityNow[index].quantity;
+
+      // console.log(productLocalStorage.quantity);
+    })
+    
+    
+    
+    console.log(valueQuantityNow[index]);
+    console.log(tempValue);
+    // console.log(valueQuantityNow[index].value);
+  }
+  
+  // console.log(valueQuantityNow[index].value);
+
+
+  console.log(productLocalStorage);
+
+
+  // marche que sur le premier
+  // valueQuantityNow.addEventListener('click', (event) => {
+  //   console.log("je suis le click de add ev");
+  // })
+
+  // console.log(valueQuantityNow.value);
+
+  // const qttLocal = productLocalStorage.map((qttData) => {
+  //   console.log(qttData.quantity);
+
+    // valueQuantityNow.value += qttData.quantity;
+
+    // const find_info_ID = qttData.find((valueQtt_elt) => valueQtt_elt !== qttData);
+
+    // valueQuantityNow.addEventListener('click', (event) => {
+    //   console.log("je suis le click de add ev");
+    // })
+
+
+  // }) // fin .map  
+     
+};
+  // valueQuantityNow.addEventListener('click', (event) => {
+  //   console.log("je suis le click de add ev");
+  // })
+  
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// async function quantityModifcation() {
+  
+//   let valueQuantityNow = document.querySelector(".itemQuantity");
+//   // console.log(valueQuantityNow.value);
+  
+//   productLocalStorage.forEach(el => {
+//     // valueQuantityNow = el.quantity;
+//     // console.log(valueQuantityNow);
+//     console.log(el.quantity);
+
+//       // n'écoute que le premier et le multiplie /4 au lieu de lire la boucle en entière
+//       valueQuantityNow.addEventListener('change', (event) => {
+//       // event.preventDefault();
+//         console.log("aie");
+//       })
+//   });
+
+  
+// }
+
+
+
+
+// base
+// function quantityModifcation() {
+
+//   const valueQuantityNow = document.querySelectorAll('.itemQuantity');
+
+//   valueQuantityNow.addEventListener('change', (event) => {
+
+    
+//   })
+  
+// };
 
 
 
