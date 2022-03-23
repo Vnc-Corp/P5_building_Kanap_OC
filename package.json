@@ -8,12 +8,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/OpenClassrooms-Student-Center/P5-Dev-Web-Kanap.git"
+    "url": "git+https://github.com/Vnc-Corp/P5_building_Kanap_OC.git"
   },
   "author": "Vincent Lariviere",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/OpenClassrooms-Student-Center/P5-Dev-Web-Kanap/issues"
+    "url": "https://github.com/Vnc-Corp/P5_building_Kanap_OC.git"
   },
-  "homepage": "https://github.com/OpenClassrooms-Student-Center/P5-Dev-Web-Kanap#readme"
+  "homepage": "https://github.com/Vnc-Corp/P5_building_Kanap_OC.git#readme"
 }

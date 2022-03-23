@@ -1,21 +1,389 @@
-// ---------------------------------------------
-// Lecture
-// let articleLinea = localStorage.getItem("obj");
-// let arrayBasket = JSON.parse(articleLinea);
-// console.log(articleJson.quantity + articleJson.color + articleJson.id);
-// console.log(arrayBasket);
+// *****************************************************************************************************************
+// *****************************************************************************************************************
+//------------------------------------------------------------------------------------------------
+//  Importation panier + affichage console
+//------------------------------------------------------------------------------------------------
+// variable lecture du stringify articleJson/articleSolo/produit
+let productLocalStorage = JSON.parse(localStorage.getItem("produit"));
 
-// async function visuelArticleBasket(articleStokage) {
-//     for (let i = 0; i < arrayBasket.length; i++) {
-//         const element = arrayBasket[i];
-//     }
-//     console.table(arrayBasket);
+//affichage du panier
+console.table(productLocalStorage);
+
+// variable fonction calcul quantité total des produits
+let totalQuantity = 0;
+
+// variable fonction calcul prix total des produits
+let totalPrice = 0;
+
+
+//------------------------------------------------------------------------------------------------
+//  Appel de fonctions
+//------------------------------------------------------------------------------------------------
+displayCartHTML(); // Affiche le panier dans sa totalité sur le DOM
+
+
+//------------------------------------------------------------------------------------------------
+//  fonction attribution données (après recup fetch)
+//------------------------------------------------------------------------------------------------
+/* 
+    - permet de récupérer les informations de l'API sans compromettre la sécurité.
+    - données utilisé pour l'affiche :
+      * name
+      * description
+      * img-alt
+      * price
+    
+    -> insertion d'une condition qui prend en compte si le panier existe (ne vaut pas null ou 0)
+      - s'il existe (vrai), activation variable avec paramètres
+      - sinon, injection au DOM en ciblant parant "cart__items" d'une information le mentionnant. 
+*/
+//------------------------------------------------------------------------------------------------
+async function displayCartHTML () {
+  const productInfo = await getProduct_info();
+  if (productLocalStorage) {
+    displayproductInfo(productInfo, productLocalStorage);
+    calculQuantity(productLocalStorage);
+    calculPrice(productLocalStorage, productInfo);
+    quantityModifcation(productLocalStorage);
+
+    console.log("Panier existe");
+  }  else {
+    console.log("Panier VIDE");
+    document.getElementById("cart__items").innerHTML += `
+    <h2 id="center">...est vide.</h2>
+    `
+  }
+};
+
+
+//------------------------------------------------------------------------------------------------
+//  Fetch - récupération API
+//------------------------------------------------------------------------------------------------
+async function getProduct_info() {
+  return fetch("http://localhost:3000/api/products") 
+  .then(function(httpBodyResponse){
+    return httpBodyResponse.json()  
+  })
+  .then(function (response){
+    return response; // retourne les données pour devenir exploitable en dehors
+  })
+  .catch(function(error) {
+    alerte(error) // retourne erreur 404 si on n'arrive pas à atteindre le serveur
+  })
+};
+
+
+//------------------------------------------------------------------------------------------------
+//  Fonction d'affichage du panier
+//------------------------------------------------------------------------------------------------
+/* 
+    * Affiche les éléments de chaque produit disponible dans le panier *
+      FONCTIONNEMENT ==================================================>
+        - initialise la methode .map (boucle) sur les produits disponible dans le localStorage
+          (récupéré au début et parse)
+          -> lance une autre methode, .find (recherche) sur le les données de l'api
+          avec pour condition que les ID de local et api soient vrais
+*/
+//------------------------------------------------------------------------------------------------
+async function displayproductInfo(productInfo, productLocalStorage) {
+  
+  const productCartLocal = productLocalStorage.map((cartDonnee) => {
+    const find_info_ID = productInfo.find((cartInfo) => cartInfo._id === cartDonnee.id);
+
+      // initialiser le .find qui va trouver l'article
+      if (find_info_ID) {
+        // console.log("IF - ID du Produit du local : " + find_info_ID._id);
+        // console.log("! trouvé ! dans find local storage " + cartDonnee.id);
+        
+        // injection au DOM
+        document.getElementById("cart__items").innerHTML += `
+          <article class="cart__item" data-id="${cartDonnee.id}" data-color="${cartDonnee.color}">
+          <div class="cart__item__img">
+          <img src="${find_info_ID.imageUrl}" alt="${find_info_ID.altTxt}>
+          </div>
+          <div class="cart__item__content">
+            <div class="cart__item__content__description">
+              <h2>${find_info_ID.name}</h2>
+              <p>${cartDonnee.color}</p>
+              <p>${find_info_ID.price} €</p>
+            </div>
+            
+            <div class="cart__item__content__settings">
+              <div class="cart__item__content__settings__quantity">
+                <p>Qté : </p>
+                <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${cartDonnee.quantity}">
+              </div>
+              <div class="cart__item__content__settings__delete">
+                <p class="deleteItem">Supprimer</p>
+              </div>
+            </div>
+          </div>
+        </article>
+      ` // fin innerHTML
+
+      console.log(" ...............................");
+      
+    }
+
+    else {
+      alert(`ERROR : Impossible de vérifier les ID de API : ${cartInfo._id} et de localStorage : ${cartDonnee.id}`)
+      console.log(`ERROR : Impossible de vérifier les ID de API : ${cartInfo._id} et de localStorage : ${cartDonnee.id}`);
+    }
+      
+  }) // fin .map  
+     
+};
+
+
+//------------------------------------------------------------------------------------------------
+//  Fonction calcul total des quantités
+//------------------------------------------------------------------------------------------------
+/*
+    ->  vérifie que les données du locale storage sont disponible
+        ->  boucle pour chaque article (forEach/.map) présent dans le tableau
+            - incrément la variable qui sotke le total avec la quantité de chaque produit
+            - pointe vers l'élément html du DOM qui affichera la valeur totale des quantités
+    -> sinon : error locale storage inaccessible
+*/
+//------------------------------------------------------------------------------------------------
+function calculQuantity(productLocalStorage) {
+  // console.log("function calcul lancé");
+  if (productLocalStorage) {
+    // console.log("local storage du if lancé");
+
+    productLocalStorage.forEach(el => {
+      totalQuantity += el.quantity;
+        
+      // console.log(el.quantity);
+      document.getElementById("totalQuantity").textContent = totalQuantity;
+
+      // console.log(" ...............................");
+    });
+  } 
+  
+  else {
+    alert(`ERROR : Impossible d'accéder au tableau des produit en locale storage ${productLocalStorage}`)
+    console.log(`ERROR : Impossible d'accéder au tableau des produit en locale storage ${productLocalStorage}`);
+  }
+}
+
+
+
+//------------------------------------------------------------------------------------------------
+//  Fonction calcul des prix pour une somme totale
+//------------------------------------------------------------------------------------------------
+/*
+    ->  vérifie que les données du locale storage sont disponible
+        ->  boucle pour chaque article (forEach/.map) présent dans le tableau locale storage
+            ->  lancement de la méthode .find pour rechercher les id commun des deux tableau
+                afin de pouvoir récupérer les prix de chaque article de manière securisée
+                -> si retour est vrai (id coïencident)
+                  - incrémente la variable totale des prix avec le calcul suivant (pour chaque article):
+                  > multiplie la quantité récupéré du locale storage
+                    par le prix associé à l'article récupéré depuis la variable de données API
+                    
+                  - pointe vers l'élément html du DOM qui affichera la valeur totale des prix
+    -> sinon : error locale storage inaccessible
+*/
+//------------------------------------------------------------------------------------------------
+function calculPrice(productLocalStorage, productInfo) {
+  // console.log("function calcul prix lancé");
+  // console.log(productInfo);
+
+  if (productLocalStorage) {
+    // console.log("local storage du if de calcul price lancé");
+
+    productLocalStorage.forEach(cartDataPriceQT => {
+
+      // console.log(cartDataPriceQT);
+      const findPrice_ID = productInfo.find((cartPriceInfo) => cartPriceInfo._id === cartDataPriceQT.id);
+      if (findPrice_ID) {
+        // console.log(findPrice_ID);
+        totalPrice += cartDataPriceQT.quantity * findPrice_ID.price; 
+        document.getElementById("totalPrice").textContent = totalPrice;
+        // console.log(" ...............................");
+      }
+
+    }); // fin forEach
+  } 
+  
+  else {
+    alert(`ERROR : Impossible d'accéder au tableau des produit en locale storage ${productLocalStorage}`)
+    console.log(`ERROR : Impossible d'accéder au tableau des produit en locale storage ${productLocalStorage}`);
+  }
+
+};
+
+
+
+
+
+
+
+async function quantityModifcation(productLocalStorage) {
+  
+  const valueQuantityNow = document.querySelectorAll(".itemQuantity"); // affiche
+  let tempValue = 0;
+  console.log(tempValue);
+  
+
+
+
+  for (let index = 0; index < valueQuantityNow.length; index++) {
+    // attribution valeur boucle de quatité de chaque article
+    tempValue = valueQuantityNow[index].value; // ne sert plus à R
+
+    // marche que sur tous les produits
+    valueQuantityNow[index].addEventListener('change', (event) => {
+      console.log("je suis le click de add ev");
+
+      let qttModifValue_new = valueQuantityNow[index].value;
+      
+      console.log(productLocalStorage[index].quantity);
+      console.log(productLocalStorage[index]);
+
+      ProductFind_result = qttModifValue_new;
+      productLocalStorage[index].quantity = parseInt(ProductFind_result);
+
+      
+      console.table(productLocalStorage);
+      console.table(ProductFind_result);
+      localStorage.setItem("produit", JSON.stringify(productLocalStorage));
+
+
+      
+
+
+
+
+
+      //actualisation
+      location.reload();
+      
+      
+      
+    })
+    
+    
+    
+    console.log(valueQuantityNow[index].value);
+    // console.log(tempValue);
+    // console.log(valueQuantityNow[index].value);
+  }
+  
+  // console.log(valueQuantityNow[index].value);
+  
+  return
+  console.log(productLocalStorage);
+};
+// valueQuantityNow.addEventListener('click', (event) => {
+  //   console.log("je suis le click de add ev");
+  // })
+  
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+  // marche que sur le premier
+  // valueQuantityNow.addEventListener('click', (event) => {
+  //   console.log("je suis le click de add ev");
+  // })
+  
+  // console.log(valueQuantityNow.value);
+  
+  // const qttLocal = productLocalStorage.map((qttData) => {
+  //   console.log(qttData.quantity);
+  
+    // valueQuantityNow.value += qttData.quantity;
+  
+    // const find_info_ID = qttData.find((valueQtt_elt) => valueQtt_elt !== qttData);
+  
+    // valueQuantityNow.addEventListener('click', (event) => {
+    //   console.log("je suis le click de add ev");
+    // })
+  
+  
+  // }) // fin .map  
+     
+
+
+
+
+
+
+
+
+
+
+// async function quantityModifcation() {
+  
+//   let valueQuantityNow = document.querySelector(".itemQuantity");
+//   // console.log(valueQuantityNow.value);
+  
+//   productLocalStorage.forEach(el => {
+//     // valueQuantityNow = el.quantity;
+//     // console.log(valueQuantityNow);
+//     console.log(el.quantity);
+
+//       // n'écoute que le premier et le multiplie /4 au lieu de lire la boucle en entière
+//       valueQuantityNow.addEventListener('change', (event) => {
+//       // event.preventDefault();
+//         console.log("aie");
+//       })
+//   });
+
+  
+// }
+
+
+
+
+// base
+// function quantityModifcation() {
+
+//   const valueQuantityNow = document.querySelectorAll('.itemQuantity');
+
+//   valueQuantityNow.addEventListener('change', (event) => {
+
+    
+//   })
+  
 // };
 
-// visuelArticleBasket();
 
-// Affichetab_test();
-document.addEventListener('DOMContentLoaded', function() {
+
+
+
+
+
+// async function totalTTC(productCartInfo, productLocalStorage) {
+//   console.log(productCartInfo);
+//   console.log(productLocalStorage);
+  
+  
+//   const productCartInfo2 = productLocalStorage.map((cartDonnee2) => {
+//     const find_info_ID2 = productInfo.find((cartInfo2) => cartInfo2._id === cartDonnee2.id);
     
-    console.table(arrayBasket);
-});
+//     if (find_info_ID2) {
+      
+//         // console.log(productCartInfo.price);
+//         // console.log(productLocalStorage.price);
+        
+//       } else {
+//       console.log("rien");
+      
+//     }
+
+//   })
+
+// }
