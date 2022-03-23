@@ -226,74 +226,95 @@ async function quantityModifcation(productLocalStorage) {
   let tempValue = 0;
   console.log(tempValue);
   
+
+
+
   for (let index = 0; index < valueQuantityNow.length; index++) {
-    
     // attribution valeur boucle de quatité de chaque article
-    tempValue = valueQuantityNow[index].value;
+    tempValue = valueQuantityNow[index].value; // ne sert plus à R
 
-    
-    
     // marche que sur tous les produits
-    valueQuantityNow[index].addEventListener('click', (event) => {
+    valueQuantityNow[index].addEventListener('change', (event) => {
       console.log("je suis le click de add ev");
-      // productLocalStorage.quantity += valueQuantityNow[index].quantity;
 
-      // console.log(productLocalStorage.quantity);
+      let qttModifValue_new = valueQuantityNow[index].value;
+      
+      console.log(productLocalStorage[index].quantity);
+      console.log(productLocalStorage[index]);
+
+      ProductFind_result = qttModifValue_new;
+      productLocalStorage[index].quantity = parseInt(ProductFind_result);
+
+      
+      console.table(productLocalStorage);
+      console.table(ProductFind_result);
+      localStorage.setItem("produit", JSON.stringify(productLocalStorage));
+
+
+      
+
+
+
+
+
+      //actualisation
+      location.reload();
+      
+      
+      
     })
     
     
     
-    console.log(valueQuantityNow[index]);
-    console.log(tempValue);
+    console.log(valueQuantityNow[index].value);
+    // console.log(tempValue);
     // console.log(valueQuantityNow[index].value);
   }
   
   // console.log(valueQuantityNow[index].value);
-
-
+  
+  return
   console.log(productLocalStorage);
+};
+// valueQuantityNow.addEventListener('click', (event) => {
+  //   console.log("je suis le click de add ev");
+  // })
+  
+
+
+
+
+
+
+
+  
+  
+
+
+
 
 
   // marche que sur le premier
   // valueQuantityNow.addEventListener('click', (event) => {
   //   console.log("je suis le click de add ev");
   // })
-
+  
   // console.log(valueQuantityNow.value);
-
+  
   // const qttLocal = productLocalStorage.map((qttData) => {
   //   console.log(qttData.quantity);
-
+  
     // valueQuantityNow.value += qttData.quantity;
-
+  
     // const find_info_ID = qttData.find((valueQtt_elt) => valueQtt_elt !== qttData);
-
+  
     // valueQuantityNow.addEventListener('click', (event) => {
     //   console.log("je suis le click de add ev");
     // })
-
-
+  
+  
   // }) // fin .map  
      
-};
-  // valueQuantityNow.addEventListener('click', (event) => {
-  //   console.log("je suis le click de add ev");
-  // })
-  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
