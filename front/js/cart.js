@@ -219,68 +219,62 @@ function calculPrice(productLocalStorage, productInfo) {
 
 
 
-
+//------------------------------------------------------------------------------------------------
+//  Fonction modification des quantités en temps réel (localStorage) / en différé/rechargement de la page (DOM)
+//------------------------------------------------------------------------------------------------
+/* 
+    ->  Pointe la classe sur laquelle on récupère l'information quantité value du DOM
+        ->  Boucle sur la valeur/quantité des différents produits du panier
+            ->  Ecoute d'un event sur le moindre changement sur la valeur pointé (.change)
+                - création d'une variable temp. pour valeur de chaque produit
+                  ->  Ajout d'une condition anti lettre et quantité compris entre 0 et 100
+                      - attribution de la nouvelle valeur/quantité à la valeur/quantité du local Storage (ciblant quantity du produit)
+                      - mis à jour du local storage
+                  -> Sinon, erreur concernant l'entrée de l'utilisateur pour la quantité du produit ciblé 
+*/
+//------------------------------------------------------------------------------------------------
 async function quantityModifcation(productLocalStorage) {
   
+  // cible la valeur du dom
   const valueQuantityNow = document.querySelectorAll(".itemQuantity"); // affiche
-  let tempValue = 0;
-  console.log(tempValue);
-  
 
-
-
+  // boucle sur tout les produits du panier existant
   for (let index = 0; index < valueQuantityNow.length; index++) {
-    // attribution valeur boucle de quatité de chaque article
-    tempValue = valueQuantityNow[index].value; // ne sert plus à R
 
-    // marche que sur tous les produits
+    // ecoute sur le dom
     valueQuantityNow[index].addEventListener('change', (event) => {
       console.log("je suis le click de add ev");
 
+      //variable temp
       let qttModifValue_new = valueQuantityNow[index].value;
+      // let qttModifValue_new = parseInt.apply(qttModifValue_new0);
+      console.log(typeof qttModifValue_new);
       
-      console.log(productLocalStorage[index].quantity);
-      console.log(productLocalStorage[index]);
+        // condition anti > 100
+        if (qttModifValue_new > 0 && qttModifValue_new <= 100) {
 
-      ProductFind_result = qttModifValue_new;
-      productLocalStorage[index].quantity = parseInt(ProductFind_result);
+          // modification de la valeur en temps réel
+          productLocalStorage[index].quantity = parseInt(qttModifValue_new);
+          localStorage.setItem("produit", JSON.stringify(productLocalStorage));
+          
+          //actualisation
+          location.reload();
+        } 
+        
+        else {
+          console.log(typeof qttModifValue_new);
+          alert(`Entrée invalide ! Veuillez saisir une quantité compris entre 1 et 100 pour votre produit...`)
+          console.log("Je suis supérieur à 100");
 
-      
-      console.table(productLocalStorage);
-      console.table(ProductFind_result);
-      localStorage.setItem("produit", JSON.stringify(productLocalStorage));
+          //actualisation (avec reload remet à jour input quantité)
+          location.reload();
+        }
 
-
-      
-
-
-
-
-
-      //actualisation
-      location.reload();
-      
-      
-      
-    })
-    
-    
-    
-    console.log(valueQuantityNow[index].value);
-    // console.log(tempValue);
-    // console.log(valueQuantityNow[index].value);
-  }
-  
-  // console.log(valueQuantityNow[index].value);
-  
-  return
-  console.log(productLocalStorage);
+    }) // fin de l'event change
+  } // fin de boucle
 };
-// valueQuantityNow.addEventListener('click', (event) => {
-  //   console.log("je suis le click de add ev");
-  // })
-  
 
+  
 
 
 
