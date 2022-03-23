@@ -45,9 +45,12 @@ async function displayCartHTML () {
     calculQuantity(productLocalStorage);
     calculPrice(productLocalStorage, productInfo);
     quantityModifcation(productLocalStorage);
+    ProductDelete(productLocalStorage);
 
     console.log("Panier existe");
-  }  else {
+  }  
+  
+  else {
     console.log("Panier VIDE");
     document.getElementById("cart__items").innerHTML += `
     <h2 id="center">...est vide.</h2>
@@ -129,9 +132,7 @@ async function displayproductInfo(productInfo, productLocalStorage) {
       alert(`ERROR : Impossible de vérifier les ID de API : ${cartInfo._id} et de localStorage : ${cartDonnee.id}`)
       console.log(`ERROR : Impossible de vérifier les ID de API : ${cartInfo._id} et de localStorage : ${cartDonnee.id}`);
     }
-      
-  }) // fin .map  
-     
+  }) // fin .map       
 };
 
 
@@ -166,7 +167,6 @@ function calculQuantity(productLocalStorage) {
     console.log(`ERROR : Impossible d'accéder au tableau des produit en locale storage ${productLocalStorage}`);
   }
 }
-
 
 
 //------------------------------------------------------------------------------------------------
@@ -211,12 +211,7 @@ function calculPrice(productLocalStorage, productInfo) {
     alert(`ERROR : Impossible d'accéder au tableau des produit en locale storage ${productLocalStorage}`)
     console.log(`ERROR : Impossible d'accéder au tableau des produit en locale storage ${productLocalStorage}`);
   }
-
 };
-
-
-
-
 
 
 //------------------------------------------------------------------------------------------------
@@ -276,17 +271,42 @@ async function quantityModifcation(productLocalStorage) {
 
   
 
-
-
-
-
-
+async function ProductDelete (produitLocalStorage) {
+  console.log(productLocalStorage);
+ 
+  // le query selector all cible tout les éléments qui ont la même classe (contre la première sans "All")
+  const deleteButton = document.querySelectorAll(".deleteItem");
   
-  
+  for (let index = 0; index < deleteButton.length; index++) {
+
+    console.log(deleteButton);
+
+    deleteButton[index].addEventListener('click', (event) => {
+
+      console.log("je supprime quelque chose !");
+      console.log(productLocalStorage[index]);
+      console.log(productLocalStorage[index].id);
+      console.log(productLocalStorage[index].color);
+      
+      let idProducts_now = productLocalStorage[index].id;
+      let idColor_now = productLocalStorage[index].color;
+
+      productLocalStorage = productLocalStorage.filter(el => el.id !== idProducts_now || el.color !== idColor_now)
+
+      console.log(productLocalStorage);
+
+      localStorage.setItem("produit", JSON.stringify(productLocalStorage));
+
+      // actualisation (avec reload remet à jour input quantité)
+      location.reload();
+      })
+  }
+}
 
 
 
-
+// delete productLocalStorage[index]; n'efface pas tout, la clé reste présente, besoin de restructurer un tableau
+// productLocalStorage_el_supp = productLocalStorage.splice(0, 1);
 
   // marche que sur le premier
   // valueQuantityNow.addEventListener('click', (event) => {
