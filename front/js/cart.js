@@ -215,7 +215,7 @@ function calculPrice(productLocalStorage, productInfo) {
 
 
 //------------------------------------------------------------------------------------------------
-//  Fonction modification des quantités en temps réel (localStorage) / en différé/rechargement de la page (DOM)
+//  Fonction modification des quantités (localSto) / en différé/recharge auto de la page (DOM)
 //------------------------------------------------------------------------------------------------
 /* 
     ->  Pointe la classe sur laquelle on récupère l'information quantité value du DOM
@@ -270,7 +270,32 @@ async function quantityModifcation(productLocalStorage) {
 };
 
   
+//------------------------------------------------------------------------------------------------
+//  Fonction suppression d'un article dans le panier
+//------------------------------------------------------------------------------------------------
+/* 
+    (Info) suit le model de base de function modification quantité en temps réel
 
+    ->  Pointe la classe sur laquelle on récupère l'empalcement du boutton (DOM)
+        ->  Boucle sur les boutons suppr des différents produits du panier
+            ->  Ecoute d'un event au clic (.click) pour chaque boutton
+                - Création de deux variables temporaires (depuis les données du panier):
+                  * idProduct_now prend pour valeur id du produit 
+                  * idColor_Nox prend pour valeur la couleur du produit
+                @ Lancement de la méthode .filter afin de récupérer la valeur des produits différents
+                des conditions pour mieux cibler le produit à effacer du panier (locale Storage)
+                - Enregistrement sur le locale storage avec un tableau restructurée (élément ciblé)
+                
+    Explication du filtre + :
+    1/ Le filtre vérifie si la couleur et id sont différent du depuis le filtre.
+    --->
+    2/ Si vrai, les valeurs trouvé sont à nouveau stocké dans le locale storage 
+    qui l'interprête comme nouveau tableau qui lui exlut l'élément id/ color
+    qui a servis de condition de filtre.
+    --->
+    3/ Stokage du nouveau tableau sans la valeur pointée.
+*/
+//------------------------------------------------------------------------------------------------
 async function ProductDelete (produitLocalStorage) {
   console.log(productLocalStorage);
  
@@ -291,7 +316,7 @@ async function ProductDelete (produitLocalStorage) {
       let idProducts_now = productLocalStorage[index].id;
       let idColor_now = productLocalStorage[index].color;
 
-      productLocalStorage = productLocalStorage.filter(el => el.id !== idProducts_now || el.color !== idColor_now)
+      productLocalStorage = productLocalStorage.filter(el => el.id !== idProducts_now || el.color !== idColor_now);
 
       console.log(productLocalStorage);
 
@@ -303,101 +328,3 @@ async function ProductDelete (produitLocalStorage) {
   }
 }
 
-
-
-// delete productLocalStorage[index]; n'efface pas tout, la clé reste présente, besoin de restructurer un tableau
-// productLocalStorage_el_supp = productLocalStorage.splice(0, 1);
-
-  // marche que sur le premier
-  // valueQuantityNow.addEventListener('click', (event) => {
-  //   console.log("je suis le click de add ev");
-  // })
-  
-  // console.log(valueQuantityNow.value);
-  
-  // const qttLocal = productLocalStorage.map((qttData) => {
-  //   console.log(qttData.quantity);
-  
-    // valueQuantityNow.value += qttData.quantity;
-  
-    // const find_info_ID = qttData.find((valueQtt_elt) => valueQtt_elt !== qttData);
-  
-    // valueQuantityNow.addEventListener('click', (event) => {
-    //   console.log("je suis le click de add ev");
-    // })
-  
-  
-  // }) // fin .map  
-     
-
-
-
-
-
-
-
-
-
-
-// async function quantityModifcation() {
-  
-//   let valueQuantityNow = document.querySelector(".itemQuantity");
-//   // console.log(valueQuantityNow.value);
-  
-//   productLocalStorage.forEach(el => {
-//     // valueQuantityNow = el.quantity;
-//     // console.log(valueQuantityNow);
-//     console.log(el.quantity);
-
-//       // n'écoute que le premier et le multiplie /4 au lieu de lire la boucle en entière
-//       valueQuantityNow.addEventListener('change', (event) => {
-//       // event.preventDefault();
-//         console.log("aie");
-//       })
-//   });
-
-  
-// }
-
-
-
-
-// base
-// function quantityModifcation() {
-
-//   const valueQuantityNow = document.querySelectorAll('.itemQuantity');
-
-//   valueQuantityNow.addEventListener('change', (event) => {
-
-    
-//   })
-  
-// };
-
-
-
-
-
-
-
-// async function totalTTC(productCartInfo, productLocalStorage) {
-//   console.log(productCartInfo);
-//   console.log(productLocalStorage);
-  
-  
-//   const productCartInfo2 = productLocalStorage.map((cartDonnee2) => {
-//     const find_info_ID2 = productInfo.find((cartInfo2) => cartInfo2._id === cartDonnee2.id);
-    
-//     if (find_info_ID2) {
-      
-//         // console.log(productCartInfo.price);
-//         // console.log(productLocalStorage.price);
-        
-//       } else {
-//       console.log("rien");
-      
-//     }
-
-//   })
-
-// }
