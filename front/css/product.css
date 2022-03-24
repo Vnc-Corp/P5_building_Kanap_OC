@@ -119,3 +119,23 @@
 		width: 90%;
 	}
 }
+
+/***************/
+/* Popup perso */
+/***************/
+.notification {
+	position: fixed;
+	color: aliceblue;
+	background: black;
+	padding: 1.2rem 2.4rem;
+	width: 100px;
+	height: 200px;
+	box-shadow: 3px 6px 12px rgba(0, 0, 0, 0, .4);
+	bottom: -8rem;
+	transition: all 0.4s;
+}
+
+#notification.show {
+	bottom: 2rem;
+	
+}

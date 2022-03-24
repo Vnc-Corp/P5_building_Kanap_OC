@@ -45,9 +45,12 @@ async function displayCartHTML () {
     calculQuantity(productLocalStorage);
     calculPrice(productLocalStorage, productInfo);
     quantityModifcation(productLocalStorage);
+    ProductDelete(productLocalStorage);
 
     console.log("Panier existe");
-  }  else {
+  }  
+  
+  else {
     console.log("Panier VIDE");
     document.getElementById("cart__items").innerHTML += `
     <h2 id="center">...est vide.</h2>
@@ -129,9 +132,7 @@ async function displayproductInfo(productInfo, productLocalStorage) {
       alert(`ERROR : Impossible de vérifier les ID de API : ${cartInfo._id} et de localStorage : ${cartDonnee.id}`)
       console.log(`ERROR : Impossible de vérifier les ID de API : ${cartInfo._id} et de localStorage : ${cartDonnee.id}`);
     }
-      
-  }) // fin .map  
-     
+  }) // fin .map       
 };
 
 
@@ -166,7 +167,6 @@ function calculQuantity(productLocalStorage) {
     console.log(`ERROR : Impossible d'accéder au tableau des produit en locale storage ${productLocalStorage}`);
   }
 }
-
 
 
 //------------------------------------------------------------------------------------------------
@@ -211,179 +211,120 @@ function calculPrice(productLocalStorage, productInfo) {
     alert(`ERROR : Impossible d'accéder au tableau des produit en locale storage ${productLocalStorage}`)
     console.log(`ERROR : Impossible d'accéder au tableau des produit en locale storage ${productLocalStorage}`);
   }
-
 };
 
 
-
-
-
-
-
+//------------------------------------------------------------------------------------------------
+//  Fonction modification des quantités (localSto) / en différé/recharge auto de la page (DOM)
+//------------------------------------------------------------------------------------------------
+/* 
+    ->  Pointe la classe sur laquelle on récupère l'information quantité value du DOM
+        ->  Boucle sur la valeur/quantité des différents produits du panier
+            ->  Ecoute d'un event sur le moindre changement sur la valeur pointé (.change)
+                - création d'une variable temp. pour valeur de chaque produit
+                  ->  Ajout d'une condition anti lettre et quantité compris entre 0 et 100
+                      - attribution de la nouvelle valeur/quantité à la valeur/quantité du local Storage (ciblant quantity du produit)
+                      - mis à jour du local storage
+                  -> Sinon, erreur concernant l'entrée de l'utilisateur pour la quantité du produit ciblé 
+*/
+//------------------------------------------------------------------------------------------------
 async function quantityModifcation(productLocalStorage) {
   
+  // cible la valeur du dom
   const valueQuantityNow = document.querySelectorAll(".itemQuantity"); // affiche
-  let tempValue = 0;
-  console.log(tempValue);
-  
 
-
-
+  // boucle sur tout les produits du panier existant
   for (let index = 0; index < valueQuantityNow.length; index++) {
-    // attribution valeur boucle de quatité de chaque article
-    tempValue = valueQuantityNow[index].value; // ne sert plus à R
 
-    // marche que sur tous les produits
+    // ecoute sur le dom
     valueQuantityNow[index].addEventListener('change', (event) => {
       console.log("je suis le click de add ev");
 
+      //variable temp
       let qttModifValue_new = valueQuantityNow[index].value;
+      // let qttModifValue_new = parseInt.apply(qttModifValue_new0);
+      console.log(typeof qttModifValue_new);
       
-      console.log(productLocalStorage[index].quantity);
+        // condition anti > 100
+        if (qttModifValue_new > 0 && qttModifValue_new <= 100) {
+
+          // modification de la valeur en temps réel
+          productLocalStorage[index].quantity = parseInt(qttModifValue_new);
+          localStorage.setItem("produit", JSON.stringify(productLocalStorage));
+          
+          //actualisation
+          location.reload();
+        } 
+        
+        else {
+          console.log(typeof qttModifValue_new);
+          alert(`Entrée invalide ! Veuillez saisir une quantité compris entre 1 et 100 pour votre produit...`)
+          console.log("Je suis supérieur à 100");
+
+          //actualisation (avec reload remet à jour input quantité)
+          location.reload();
+        }
+
+    }) // fin de l'event change
+  } // fin de boucle
+};
+
+  
+//------------------------------------------------------------------------------------------------
+//  Fonction suppression d'un article dans le panier
+//------------------------------------------------------------------------------------------------
+/* 
+    (Info) suit le model de base de function modification quantité en temps réel
+
+    ->  Pointe la classe sur laquelle on récupère l'empalcement du boutton (DOM)
+        ->  Boucle sur les boutons suppr des différents produits du panier
+            ->  Ecoute d'un event au clic (.click) pour chaque boutton
+                - Création de deux variables temporaires (depuis les données du panier):
+                  * idProduct_now prend pour valeur id du produit 
+                  * idColor_Nox prend pour valeur la couleur du produit
+                @ Lancement de la méthode .filter afin de récupérer la valeur des produits différents
+                des conditions pour mieux cibler le produit à effacer du panier (locale Storage)
+                - Enregistrement sur le locale storage avec un tableau restructurée (élément ciblé)
+                
+    Explication du filtre + :
+    1/ Le filtre vérifie si la couleur et id sont différent du depuis le filtre.
+    --->
+    2/ Si vrai, les valeurs trouvé sont à nouveau stocké dans le locale storage 
+    qui l'interprête comme nouveau tableau qui lui exlut l'élément id/ color
+    qui a servis de condition de filtre.
+    --->
+    3/ Stokage du nouveau tableau sans la valeur pointée.
+*/
+//------------------------------------------------------------------------------------------------
+async function ProductDelete (produitLocalStorage) {
+  console.log(productLocalStorage);
+ 
+  // le query selector all cible tout les éléments qui ont la même classe (contre la première sans "All")
+  const deleteButton = document.querySelectorAll(".deleteItem");
+  
+  for (let index = 0; index < deleteButton.length; index++) {
+
+    console.log(deleteButton);
+
+    deleteButton[index].addEventListener('click', (event) => {
+
+      console.log("je supprime quelque chose !");
       console.log(productLocalStorage[index]);
-
-      ProductFind_result = qttModifValue_new;
-      productLocalStorage[index].quantity = parseInt(ProductFind_result);
-
+      console.log(productLocalStorage[index].id);
+      console.log(productLocalStorage[index].color);
       
-      console.table(productLocalStorage);
-      console.table(ProductFind_result);
+      let idProducts_now = productLocalStorage[index].id;
+      let idColor_now = productLocalStorage[index].color;
+
+      productLocalStorage = productLocalStorage.filter(el => el.id !== idProducts_now || el.color !== idColor_now);
+
+      console.log(productLocalStorage);
+
       localStorage.setItem("produit", JSON.stringify(productLocalStorage));
 
-
-      
-
-
-
-
-
-      //actualisation
+      // actualisation (avec reload remet à jour input quantité)
       location.reload();
-      
-      
-      
-    })
-    
-    
-    
-    console.log(valueQuantityNow[index].value);
-    // console.log(tempValue);
-    // console.log(valueQuantityNow[index].value);
+      })
   }
-  
-  // console.log(valueQuantityNow[index].value);
-  
-  return
-  console.log(productLocalStorage);
-};
-// valueQuantityNow.addEventListener('click', (event) => {
-  //   console.log("je suis le click de add ev");
-  // })
-  
+}
 
-
-
-
-
-
-
-  
-  
-
-
-
-
-
-  // marche que sur le premier
-  // valueQuantityNow.addEventListener('click', (event) => {
-  //   console.log("je suis le click de add ev");
-  // })
-  
-  // console.log(valueQuantityNow.value);
-  
-  // const qttLocal = productLocalStorage.map((qttData) => {
-  //   console.log(qttData.quantity);
-  
-    // valueQuantityNow.value += qttData.quantity;
-  
-    // const find_info_ID = qttData.find((valueQtt_elt) => valueQtt_elt !== qttData);
-  
-    // valueQuantityNow.addEventListener('click', (event) => {
-    //   console.log("je suis le click de add ev");
-    // })
-  
-  
-  // }) // fin .map  
-     
-
-
-
-
-
-
-
-
-
-
-// async function quantityModifcation() {
-  
-//   let valueQuantityNow = document.querySelector(".itemQuantity");
-//   // console.log(valueQuantityNow.value);
-  
-//   productLocalStorage.forEach(el => {
-//     // valueQuantityNow = el.quantity;
-//     // console.log(valueQuantityNow);
-//     console.log(el.quantity);
-
-//       // n'écoute que le premier et le multiplie /4 au lieu de lire la boucle en entière
-//       valueQuantityNow.addEventListener('change', (event) => {
-//       // event.preventDefault();
-//         console.log("aie");
-//       })
-//   });
-
-  
-// }
-
-
-
-
-// base
-// function quantityModifcation() {
-
-//   const valueQuantityNow = document.querySelectorAll('.itemQuantity');
-
-//   valueQuantityNow.addEventListener('change', (event) => {
-
-    
-//   })
-  
-// };
-
-
-
-
-
-
-
-// async function totalTTC(productCartInfo, productLocalStorage) {
-//   console.log(productCartInfo);
-//   console.log(productLocalStorage);
-  
-  
-//   const productCartInfo2 = productLocalStorage.map((cartDonnee2) => {
-//     const find_info_ID2 = productInfo.find((cartInfo2) => cartInfo2._id === cartDonnee2.id);
-    
-//     if (find_info_ID2) {
-      
-//         // console.log(productCartInfo.price);
-//         // console.log(productLocalStorage.price);
-        
-//       } else {
-//       console.log("rien");
-      
-//     }
-
-//   })
-
-// }

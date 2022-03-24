@@ -359,6 +359,34 @@ Pour consulter votre panier, cliquez sur OK`))
 };
 
 
+//--------------------------------------------------------------------------------------------------------
+//version 2
+
+// async function popUpVersion2() {
+
+
+//     const buttonShow = document.querySelector('addToCart');
+
+//     let msg_elt = document.createElement("p");
+//     msg_elt.className('notification');
+//     msg_elt.innerHTML = "je suis là";
+//     document.querySelector('#cart').appendChild(msg_elt);
+
+
+//     const notification = document.querySelector('.notification');
+
+//     window.addEventListener('click', () => {
+//         console.log("click fonctionne");
+
+//         notification.classList.add('show');
+        
+        
+
+
+
+//     })
+// };
+// popUpVersion2();
 
 
 
@@ -371,6 +399,22 @@ Pour consulter votre panier, cliquez sur OK`))
 
 
 
+
+
+
+
+
+
+// document.getElementById("cart").innerHTML += `
+    
+//         <article>
+//             <img src="" alt="">
+//             <h1 id="notification"> Ajout du produit (nom produit et quantité)</h3>
+//             <p class="choice_1"> rester ici</p>
+//             <p class="choice_1"> accueil</p>
+//             <p class="choice_1"> panier </p>
+//         </article>
+//     `
 
 
 
