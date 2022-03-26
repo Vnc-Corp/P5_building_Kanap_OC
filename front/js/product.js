@@ -14,8 +14,8 @@ let productId = url.searchParams.get("id"); // va chercher les paramètres de la
 let articleSolo = "";
 
 // Variable displayArticleSolo() 
-let option_elt = document.createElement("option"); // création de l'éléments option
-select_elt = option_elt;
+// let option_elt = document.createElement("option"); // création de l'éléments option
+// select_elt = option_elt;
 
 // Variable getSelectValue
 let selectColor = "";
@@ -107,13 +107,13 @@ const contentDisplayArticle = displayArticleSolo;
 async function displayArticleSolo(articleSolo) {
 
     // partie 1
-    const title_elt = document.getElementById("title").innerHTML = articleSolo.name;
-    const price_elt = document.getElementById("price").innerHTML = articleSolo.price;
-    const description_elt = document.getElementById("description").innerHTML = articleSolo.description;
+    const title_elt = document.getElementById("title").textContent = articleSolo.name;
+    const price_elt = document.getElementById("price").textContent = articleSolo.price;
+    const description_elt = document.getElementById("description").textContent = articleSolo.description;
     
     // partie 2
     const img_elt = document.createElement("img"); // création de la balise image
-    img_elt.src = articleSolo.imageUrl 
+    img_elt.src = articleSolo.imageUrl; 
     img_elt.alt = articleSolo.altTxt;
     let item__img_elt = document.querySelector(".item__img"); // sélectionne la div qui va recevoir img.src
     item__img_elt.insertAdjacentElement("afterbegin", img_elt);
@@ -122,14 +122,20 @@ async function displayArticleSolo(articleSolo) {
     /*
     
     */
-    option_elt = articleSolo.colors.map ((colorSolo) => {
+    // option_elt = articleSolo.colors.map ((colorSolo) => {
         
+        for (let colorSolo of articleSolo.colors) {
+        let option_elt = document.createElement("option"); // création de l'éléments option
         // let select_value = option.value;
-        document.querySelector("#colors").innerHTML += `
-        <option value ="${colorSolo}">${colorSolo}</option>;
-        `
+        document.querySelector("#colors").appendChild(option_elt);
+        option_elt.textContent = colorSolo;
+
+        // // let select_value = option.value;
+        // document.querySelector("#colors").innerHTML += `
+        // <option value ="${colorSolo}">${colorSolo}</option>;
+        // `
         // console.log(option_elt);
-    }) 
+    } 
 };
 
 //------------------------------------------------------------------------------------------------
@@ -361,30 +367,29 @@ Pour consulter votre panier, cliquez sur OK`))
 
 //--------------------------------------------------------------------------------------------------------
 //version 2
+// let func = myFunction();
+
+// async function myFunction() {
+//     var popup = document.getElementById("myPopup");
+//     popup.classList.toggle("show");
+//   }
 
 // async function popUpVersion2() {
 
+    // window.addEventListener('click', () => {
+    //     console.log("click fonctionne");
 
-//     const buttonShow = document.querySelector('addToCart');
-
-//     let msg_elt = document.createElement("p");
-//     msg_elt.className('notification');
-//     msg_elt.innerHTML = "je suis là";
-//     document.querySelector('#cart').appendChild(msg_elt);
-
-
-//     const notification = document.querySelector('.notification');
-
-//     window.addEventListener('click', () => {
-//         console.log("click fonctionne");
-
-//         notification.classList.add('show');
+    //      document.body.innerHTML = `
+    //     <div class="popup" onclick="${func}">Click me!
+    //     <span class="popuptext" id="myPopup">Popup text...</span>
+    //     </div> 
+    //     `
         
-        
+        // myFunction();
 
 
 
-//     })
+    // })
 // };
 // popUpVersion2();
 
@@ -393,19 +398,7 @@ Pour consulter votre panier, cliquez sur OK`))
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-// document.getElementById("cart").innerHTML += `
+// document.getElementById("cart").textContent += `
     
 //         <article>
 //             <img src="" alt="">
@@ -420,31 +413,13 @@ Pour consulter votre panier, cliquez sur OK`))
 
 
 
-//*************************************
-// test function extern maxquantity
-//*************************************
-// problème, je ne peux pas intervenir sur la quantity 
 
-
-// async function checkQuantityMax(arrayBasket) {
-//     // vérification de la quantité maximale
-//     if (arrayBasket.quantity > maxQuantity) {
-//         console.log("je suis supérieur à 100 : " + arraybasket.quantity);
-//         alert(`Désolé, votre panier dépasse la quantité maximum pour ce produit. Celui-ci sera donc initialiser à 100 dans votre panier`);
-//         // réinitialisation à 100, valeur de ma variable déclarée
-//         arraybasket.quantity = maxQuantity;
-//             console.log("je réinitialise à 100 : " + arraybasket.quantity);
-//         }
-
-//         else {
-//             console.log("Je suis inférieur à 100... : " + arraybasket.quantity);
-//         }
-    
-// };
-
-// window.addEventListener('click', () => {
-//     // checkQuantityMax();
-// });
 console.table(arrayBasket);
 
 
+// function testMoi () {
+//     window.addEventListener('click', () => {
+//         console.log("je suis function test moi haha");
+//     })
+// }
+// testMoi();

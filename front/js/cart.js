@@ -86,6 +86,7 @@ async function getProduct_info() {
           (récupéré au début et parse)
           -> lance une autre methode, .find (recherche) sur le les données de l'api
           avec pour condition que les ID de local et api soient vrais
+            -> Puis création des balises/class/etc... à afficher au dom
 */
 //------------------------------------------------------------------------------------------------
 async function displayproductInfo(productInfo, productLocalStorage) {
@@ -98,32 +99,85 @@ async function displayproductInfo(productInfo, productLocalStorage) {
         // console.log("IF - ID du Produit du local : " + find_info_ID._id);
         // console.log("! trouvé ! dans find local storage " + cartDonnee.id);
         
-        // injection au DOM
-        document.getElementById("cart__items").innerHTML += `
-          <article class="cart__item" data-id="${cartDonnee.id}" data-color="${cartDonnee.color}">
-          <div class="cart__item__img">
-          <img src="${find_info_ID.imageUrl}" alt="${find_info_ID.altTxt}>
-          </div>
-          <div class="cart__item__content">
-            <div class="cart__item__content__description">
-              <h2>${find_info_ID.name}</h2>
-              <p>${cartDonnee.color}</p>
-              <p>${find_info_ID.price} €</p>
-            </div>
-            
-            <div class="cart__item__content__settings">
-              <div class="cart__item__content__settings__quantity">
-                <p>Qté : </p>
-                <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${cartDonnee.quantity}">
-              </div>
-              <div class="cart__item__content__settings__delete">
-                <p class="deleteItem">Supprimer</p>
-              </div>
-            </div>
-          </div>
-        </article>
-      ` // fin innerHTML
+        // Ajout Article
+        let productArticle = document.createElement("article");
+        document.querySelector("#cart__items").appendChild(productArticle);
+        productArticle.classList.add("cart__item");
+        productArticle.setAttribute('data-id', cartDonnee.id);
+        productArticle.setAttribute('data-color', cartDonnee.color);
+        
+        // Ajout div pour img
+        let productDiv_img = document.createElement("div");
+        productArticle.appendChild(productDiv_img);
+        productDiv_img.classList.add("cart__item__img");
 
+        // Ajout image et alt
+        let productImg = document.createElement("img");
+        productDiv_img.appendChild(productImg);
+        productImg.src = find_info_ID.imageUrl;
+        productImg.alt = find_info_ID.altTxt;
+
+        // Ajout div qui contiendra nom, couleur et prix du produit
+        let productDiv_content = document.createElement("div");
+        productArticle.appendChild(productDiv_content);
+        productDiv_content.classList.add("cart__item__content");
+
+        // Ajout div qui contiendra nom, couleur et prix du produit
+        let productDiv_content_description = document.createElement("div");
+        productDiv_content.appendChild(productDiv_content_description);
+        productDiv_content_description.classList.add("cart__item__content__description");
+
+        //ajout nom du produit
+        let producName = document.createElement("h2");
+        productDiv_content_description.appendChild(producName);
+        producName.textContent = find_info_ID.name;
+
+        // Ajout couleur du produit
+        let productColor = document.createElement("p");
+        productDiv_content_description.appendChild(productColor);
+        productColor.textContent = cartDonnee.color;
+
+        // Ajout prix du produit
+        let productPrice = document.createElement("p");
+        productDiv_content_description.appendChild(productPrice);
+        productPrice.textContent = find_info_ID.price + " €";
+
+        // Ajout div qui contiendra le se div de setting quantity
+        let productDiv_content_setting = document.createElement("div");
+        productDiv_content.appendChild(productDiv_content_setting);
+        productDiv_content_setting.classList.add("cart__item__content__settings");
+
+        // Ajout div qui contiendra l'ajout/diminution dynamique du nombre d'article/produit
+        let productDiv_content_setting_quantity = document.createElement("div");
+        productDiv_content_setting.appendChild(productDiv_content_setting_quantity);
+        productDiv_content_setting_quantity.classList.add("cart__item__content__settings_quantity");
+
+        // Ajout du texte avec valeur de la quantité
+        let productQuantity_text = document.createElement("p") ;
+        productDiv_content_setting_quantity.appendChild(productQuantity_text);
+        productQuantity_text.textContent = "Qté : ";
+
+        // Ajout input avec valeur modifiable (ajout/diminution)
+        let productQuantity = document.createElement("input");
+        productDiv_content_setting_quantity.appendChild(productQuantity);
+        productQuantity.classList.add("itemQuantity");
+        productQuantity.setAttribute ("type", "number");
+        productQuantity.setAttribute ("min", "1");
+        productQuantity.setAttribute ("max", "100");
+        productQuantity.setAttribute ("name", "itemQuantity");
+        productQuantity.setAttribute ("value", cartDonnee.quantity);
+
+        // Ajout div qui contiendra la possibilité de supprimer un produit
+        let productDiv_content_setting_delete = document.createElement("div");
+        productDiv_content_setting.appendChild(productDiv_content_setting_delete);
+        productDiv_content_setting_delete.classList.add("cart__item__content__settings__delete");
+
+        // Ajout du p qui assumera l'action de suprrimer
+        let productDelete = document.createElement("p");
+        productDiv_content_setting_delete.appendChild(productDelete);
+        productDelete.classList.add("deleteItem");
+        productDelete.textContent = "Suprrimer";
+        
       console.log(" ...............................");
       
     }
@@ -274,24 +328,24 @@ async function quantityModifcation(productLocalStorage) {
 //  Fonction suppression d'un article dans le panier
 //------------------------------------------------------------------------------------------------
 /* 
-    (Info) suit le model de base de function modification quantité en temps réel
-
+    (Info) suit le model de base de function modification quantité en temps réel  
     ->  Pointe la classe sur laquelle on récupère l'empalcement du boutton (DOM)
         ->  Boucle sur les boutons suppr des différents produits du panier
             ->  Ecoute d'un event au clic (.click) pour chaque boutton
+              ->  Condition si le panier est plus grand ou égal à deux :
                 - Création de deux variables temporaires (depuis les données du panier):
                   * idProduct_now prend pour valeur id du produit 
                   * idColor_Nox prend pour valeur la couleur du produit
-                @ Lancement de la méthode .filter afin de récupérer la valeur des produits différents
-                des conditions pour mieux cibler le produit à effacer du panier (locale Storage)
+                  @ Lancement de la méthode .filter afin de récupérer la valeur des produits différents
+                  des conditions pour mieux cibler le produit à effacer du panier (locale Storage)
                 - Enregistrement sur le locale storage avec un tableau restructurée (élément ciblé)
-                
+              -> Sinon effacer le local storage pour un panier vide 
     Explication du filtre + :
-    1/ Le filtre vérifie si la couleur et id sont différent du depuis le filtre.
+    1/ Le filtre vérifie si la couleur et id sont différent du produit de (ref click) depuis le filtre.
     --->
-    2/ Si vrai, les valeurs trouvé sont à nouveau stocké dans le locale storage 
-    qui l'interprête comme nouveau tableau qui lui exlut l'élément id/ color
-    qui a servis de condition de filtre.
+    2/ Si vrai, les valeurs trouvées sont à nouveau stockées dans le locale storage 
+    qui l'interprête comme nouveau tableau, qui lui exlut l'élément id/color du présent produit
+    qui a servit de condition de filtre.
     --->
     3/ Stokage du nouveau tableau sans la valeur pointée.
 */
@@ -308,7 +362,8 @@ async function ProductDelete (produitLocalStorage) {
 
     deleteButton[index].addEventListener('click', (event) => {
 
-      console.log("je supprime quelque chose !");
+      if (productLocalStorage.length >= 2 ) {
+        console.log("je supprime quelque chose !");
       console.log(productLocalStorage[index]);
       console.log(productLocalStorage[index].id);
       console.log(productLocalStorage[index].color);
@@ -324,7 +379,30 @@ async function ProductDelete (produitLocalStorage) {
 
       // actualisation (avec reload remet à jour input quantité)
       location.reload();
-      })
+      }
+
+      else {
+        // efface tout et ne laisse pas de tableau vide
+        localStorage.clear();
+
+        // actualisation (avec reload remet à jour input quantité)
+        location.reload();
+      }  
+    })
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
