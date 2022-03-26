@@ -55,15 +55,36 @@ async function getArticle() {
 function displayArticles(articles) {
     console.log("displayArticle");
         const product_item = articles.map((item) => {
-            document.getElementById("items").innerHTML += `
-            <a href="product.html?id=${item._id}">
-                <article>
-                    <img src="${item.imageUrl}" alt="${item.altTxt}">
-                    <h3 id="producName" class="productName">${item.name}</h3>
-                    <p class="productDescription">${item.description}</p>
-                </article>
-            </a>
-            `
+
+            // Ajout du lien
+            let productLink = document.createElement("a");
+            document.querySelector(".items").appendChild(productLink);
+            productLink.href = `product.html?id=${item._id}`;
+
+            // Création article
+            let productArticle = document.createElement("article");
+            productLink.appendChild(productArticle);
+
+            // Ajout de l'image
+            let productImg = document.createElement("img");
+            productArticle.appendChild(productImg);
+            productImg.src = item.imageUrl;
+            productImg.alt = item.altTxt;
+
+            // ajout du nom du produit
+            let productName = document.createElement("h3");
+            productArticle.appendChild(productName);
+            productName.classList.add("productName");
+            productName.textContent = item.name;
+
+            // ajout de la description de l'article
+            let productDescription = document.createElement("p");
+            productArticle.appendChild(productDescription);
+            productDescription.classList.add("productDescription")
+            productDescription.textContent = item.description;
+
+
+
             console.table(item._id);
             console.table(item.imageUrl);
             console.table(item.altTxt);
@@ -71,3 +92,17 @@ function displayArticles(articles) {
             console.table(item.description);
         })    
 };
+
+
+
+
+
+// document.getElementById("items").innerHTML += `
+// <a href="product.html?id=${item._id}">
+//     <article>
+//         <img src="${item.imageUrl}" alt="${item.altTxt}">
+//         <h3 id="producName" class="productName">${item.name}</h3>
+//         <p class="productDescription">${item.description}</p>
+//     </article>
+// </a>
+// `
