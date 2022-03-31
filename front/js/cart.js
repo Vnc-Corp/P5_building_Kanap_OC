@@ -598,7 +598,7 @@ function postForm() {
     // création du tableau de produit à poster
     let productsArrayToPost = [];
 
-    // boucle sur le produits du loc Storage
+    // boucle sur le produits du locale Storage
     for (let i = 0; i < productLocalStorage.length; i++) {
       let idProduct = productLocalStorage[i].id;
       let qttProduct = productLocalStorage[i].quantity;
@@ -625,7 +625,6 @@ function postForm() {
         products: productsArrayToPost 
       };
 
-
     const promise01 = fetch("http://localhost:3000/api/products/order", {
       method: "POST",
       body: JSON.stringify(order),
@@ -642,10 +641,11 @@ function postForm() {
         catch (error) {
           console.log(error);
         }
-      }).then(r => {
-        console.log(r);
+      }).then(data => {
+        localStorage.setItem("orderId", data.orderId);
+        document.location.href = "confirmation.html";
+        console.log(data);
       })
-
 
 
 
