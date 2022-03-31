@@ -351,14 +351,14 @@ async function quantityModifcation(productLocalStorage) {
 */
 //------------------------------------------------------------------------------------------------
 async function ProductDelete (produitLocalStorage) {
-  console.log(productLocalStorage);
+  // console.log(productLocalStorage);
  
   // le query selector all cible tout les éléments qui ont la même classe (contre la première sans "All")
   const deleteButton = document.querySelectorAll(".deleteItem");
   
   for (let index = 0; index < deleteButton.length; index++) {
 
-    console.log(deleteButton);
+    // console.log(deleteButton);
 
     deleteButton[index].addEventListener('click', (event) => {
 
@@ -594,8 +594,24 @@ function postForm() {
     console.log("je fonctionne au clic de form !");
     console.log(firstName + " " + lastName + " " + address + " " + city + " " + email);
     
+
+    // création du tableau de produit à poster
+    let productsArrayToPost = [];
+
+    // boucle sur le produits du loc Storage
+    for (let i = 0; i < productLocalStorage.length; i++) {
+      let idProduct = productLocalStorage[i].id;
+      let qttProduct = productLocalStorage[i].quantity;
+        for (let q = 0; q < qttProduct; q++) {
+          // const element = array[q];
+          productsArrayToPost.push(idProduct);
+
+        }
+      
+    }
+    console.log(productsArrayToPost);
     if (firstName && lastName && address && city && email) {
-      const orderId = {
+      const order = {
         contact : {
           firstName,
           lastName,
@@ -603,30 +619,87 @@ function postForm() {
           city,
           email,
         },
-        products : productLocalStorage,
+        // products : productLocalStorage,
+        // products: ['415b7cacb65d43b2b5c1ff70f3393ad1', '415b7cacb65d43b2b5c1ff70f3393ad1','055743915a544fde83cfdfc904935ee7']
+
+        products: productsArrayToPost 
       };
 
-      const promise01 = fetch("http://localhost:3000/api/order", {
-        method: "POST",
-        body: JSON.stringify(orderId),
-        headers: {
-          "Content-Type": "application/JSON",
-        }
-      });
+
+    const promise01 = fetch("http://localhost:3000/api/products/order", {
+      method: "POST",
+      body: JSON.stringify(order),
+      headers: {
+        'Accept': 'application/json', 
+        "Content-Type": "application/json",
+      }
+    })
 
       promise01.then(async (response) => {
         try {
-          console.log(response);
-          const contenu = await response.JSON();
-          console.log(contenu);
+          return response.json();
         }
         catch (error) {
           console.log(error);
         }
-      });
+      }).then(r => {
+        console.log(r);
+      })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      // const promise01 = {
+      //   method: 'POST',
+      //   body: JSON.stringify(order),
+      //   Headers: {
+      //     'Accept' : 'application/json',
+      //     'Content-Type': 'application/json',
+      //   },
+      // };
+
+      // fetch("http://localhost:3000/api/products/order", promise01)
+      //   .then ((response) => response.json())
+      //   .then((data) => {
+      //     console.log(data);
+      //     localStorage.setItem("orderId", data.orderId);
+      // })
+      // .catch((error) => {
+      //   console.log(error);
+      // });
+      
+      // fetch('http://localhost:3000/api/order', {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-type': 'application/json'
+      //   },
+      //   body: order,
+      //   json: true
+
+      // })
+
 
       alert("Commande validée !");
-      console.log(orderId);
+      // console.log(orderId);
 
       // valeur remisent à zéro après post
       inputs.forEach(input => (input.value) = "");
