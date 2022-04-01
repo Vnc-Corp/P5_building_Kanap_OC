@@ -351,14 +351,14 @@ async function quantityModifcation(productLocalStorage) {
 */
 //------------------------------------------------------------------------------------------------
 async function ProductDelete (produitLocalStorage) {
-  console.log(productLocalStorage);
+  // console.log(productLocalStorage);
  
   // le query selector all cible tout les éléments qui ont la même classe (contre la première sans "All")
   const deleteButton = document.querySelectorAll(".deleteItem");
   
   for (let index = 0; index < deleteButton.length; index++) {
 
-    console.log(deleteButton);
+    // console.log(deleteButton);
 
     deleteButton[index].addEventListener('click', (event) => {
 
@@ -392,6 +392,260 @@ async function ProductDelete (produitLocalStorage) {
   }
 }
 
+//  ************************************************************************************************************************
+//                                                        FORMULAIRE 
+//  ************************************************************************************************************************
+// ----------------------------REGEX
+//regex vérifie les caractères spéciaux
+let caracSpecREGEX = new RegExp("^([^@&()!_$*€£`+=\/;?#])+$");
+
+// regex verifie prénom lettre min/maj qui accepte {,.'-} et min 1, max 50
+let firstNameREGEX = new RegExp("^([a-zA-Zàâäéèêëïîôöùûüç ,.'-]{1,50})$");
+
+// regex verifie nom lettre min/maj qui accepte {,.'-} et min 1, max 55
+let lastNameREGEX = new RegExp("^([a-zA-Zàâäéèêëïîôöùûüç ,.'-]{1,55})$"); 
+
+// regex vérifie entrée nombre, espace, entrée de lettre quelconque
+let adressREGEX = new RegExp("^[0-9]{1,3}(?:(?:[,. ]){1}[-a-zA-Zàâäéèêëïîôöùûüç]{1,15})(?:(?:[,. ]){1}[-a-zA-Zàâäéèêëïîôöùûüç]{1,75})+$");
+
+// regex vérifie 5 chiffre, espace, entrée de lettre quelconque en acceptant carac.spé accent, limité à 46 lettres
+let cityREGEX = new RegExp("^(([0-8][0-9])|(9[0-5])|(2[ab]))+([0-9]{3}){1}(?:(?:[,. ]){1}[-a-zA-Zàâäéèêëïîôöùûüç]{1,75})+$");
+
+// regex vérifie un nombre quelconque d'entrée de lettre et de chiffre, le @ (x1), nbr et lettre quelconque, le (.) x1) 
+// et l'entrée de lettres minuscules compris entre 2 et 10  
+let emailREGEX = new RegExp("^[a-zA-Z0-9.-_]+[@]{1}[a-zA-Z0-9.-_]+[.]{1,5}[a-z]{2,10}$");
+// ----------------------------REGEX
+
+// sélection des inputs dans une variable
+const inputs = document.querySelectorAll(
+  'input[type="text"], input[type="email"]');
+
+// initialisation des varaibles 
+let firstName, lastName, address, city, email;
+
+//-----------------------------------------------
+// fonction affiche message erreur
+const errorDisplay = (tag, message, valid) => {
+  
+  // const container = document.querySelector("cart__order__form__question");
+  const p_elt = document.querySelector("#" + tag);
+  // console.log(p_elt);
+  
+  if (!valid) {
+    console.log("CONFLIT REG");
+    p_elt.textContent = message;
+    p_elt.style.color = '#c90f00';
+    p_elt.style.fontWeight = 'bold';
+  } 
+  
+  else {
+    console.log("c'est bon, regex pas en conflit");
+    p_elt.textContent = message; 
+    p_elt.style.color = '#75ff33'; 
+    p_elt.style.fontWeight = 'bold'; 
+  }
+}
+
+//-----------------------------------------------
+// fonction ciblage des regex / affichage acction
+//-----------------------------------------------
+//---------------------------------------------------------------------------firstNameChecker
+const firstNameChecker = (value) => {
+  console.log(value);
+  if (!value.match(firstNameREGEX)) {
+    errorDisplay("firstNameErrorMsg", "Prénom entre 1 et 50 caractères, sans chiffres ou de caractères spéciaux.");
+    if (!value.match(caracSpecREGEX)) errorDisplay("firstNameErrorMsg", "Pas de caractères spéciaux tel que : $%=@...");
+    if (value.length == 0) errorDisplay("firstNameErrorMsg", "");
+    
+    firstName = null;
+  }
+
+  else {
+    console.log("regex ok");
+    errorDisplay("firstNameErrorMsg","Prénom valide.", true);
+    firstName = value;
+    console.log(firstName + " " + value);
+  }
+};
+
+//---------------------------------------------------------------------------lastNameChecker
+const lastNameChecker = (value) => {
+  console.log(value);
+  if (!value.match(lastNameREGEX)) {
+    errorDisplay("lastNameErrorMsg", "Nom entre 1 et 55 caractères, sans chiffres ou de caractères spéciaux.");
+    if (!value.match(caracSpecREGEX)) errorDisplay("lastNameErrorMsg", "Pas de caractères spéciaux tel que : $%=@...");
+    if (value.length == 0) errorDisplay("lastNameErrorMsg", "");
+    lastName = null;
+  }
+
+  else {
+    console.log("regex ok");
+    errorDisplay("lastNameErrorMsg","Nom valide.", true);
+    
+    lastName = value.toUpperCase();
+    console.log(lastName + " " + value);
+  }
+
+  
+};
+//---------------------------------------------------------------------------adressChecker
+const addressChecker = (value) => {
+  console.log(value);
+  if (!value.match(adressREGEX)) {
+    errorDisplay("addressErrorMsg","format adresse : N°(3 max) + rue + nom de la rue.");
+    if (!value.match(caracSpecREGEX)) errorDisplay("addressErrorMsg", "Pas de caractères spéciaux tel que : $%=@...");
+    if (value.length > 75) errorDisplay("addressErrorMsg", "Adresse limitée à 75 caractères...");
+    if (value.length == 0) errorDisplay("addressErrorMsg", "");
+    address = null;
+  }
+  
+  else {
+    errorDisplay("addressErrorMsg", "Adresse valide.", true);
+    address = value;
+    console.log(address + " " + value);
+  }
+
+};
+
+//---------------------------------------------------------------------------cityChecker
+const cityChecker = (value) => {
+  console.log(value);
+  if (!value.match(cityREGEX)) {
+    errorDisplay("cityErrorMsg", "Exemple code postal : 97400 + nom de la ville");
+    if (!value.match(caracSpecREGEX)) errorDisplay("cityErrorMsg", "Pas de caractères spéciaux tel que : $%=@...");
+    if (value.length > 75) errorDisplay("cityErrorMsg", "Ville limitée à un total de 75 caractères...");
+    if (value.length == 0) errorDisplay("cityErrorMsg", "");
+    city = null;
+  }
+  
+  else {
+    errorDisplay("cityErrorMsg", "Code postal valide.", true);
+    city = value;
+    console.log(city + " " + value);
+  }
+};
+
+//---------------------------------------------------------------------------emailChecker
+const emailChecker = (value) => {
+  console.log(value);
+  if (!value.match(emailREGEX)) {
+    email = null;
+    errorDisplay("emailErrorMsg", "Email type : dupont85@gmail.com");
+    if (value.length == 0) errorDisplay("emailErrorMsg", "");
+    // if (!value.match(caracSpecREGEX)) errorDisplay("emailErrorMsg", "Pas de caractères spéciaux tel que : $%=... Le @ et (-_.) sont tolérés ");
+}
+
+else {
+    errorDisplay("emailErrorMsg", "Email valide.", true);
+    email = value;
+    console.log(email + " " + value);
+}
+};
+
+//-----------------------------------------------
+// (3) afficher / prendre en compte la valeur des entrées de l'utilisateur
+inputs.forEach((input) => {
+
+  input.addEventListener('input', (e) => {
+    switch (e.target.id) {
+
+      case "firstName":
+        firstNameChecker(e.target.value);
+        break;
+      
+        case "lastName":
+        lastNameChecker(e.target.value);
+        break;
+        
+        case "address":
+        addressChecker(e.target.value);
+        break;
+        
+        case "city":
+        cityChecker(e.target.value);
+        break;
+
+        case "email":
+        emailChecker(e.target.value);
+        break;
+
+        default:
+        nul;
+        }   
+  });
+});
+
+// console.log(form);
+// fonction confirmation commande (post)
+function postForm() {
+  const form = document.getElementById("order");
+  // postForm();
+  form.addEventListener("click", (event) => {
+    event.preventDefault();
+    
+    // test value ok pour form -----------
+    firstName = "Vincent";  
+    lastName =  "Lopez";
+    address = "12 rue responsive";
+    city = "78200 mantes la jolie";
+    email = "vincent@gmail.com";
+    // -----------------------------
+
+    console.log("je fonctionne au clic de form !");
+    console.log(firstName + " " + lastName + " " + address + " " + city + " " + email);
+    
+
+    // création du tableau de produit à poster
+    let productsArrayToPost = [];
+
+    // boucle sur le produits du locale Storage
+    for (let i = 0; i < productLocalStorage.length; i++) {
+      let idProduct = productLocalStorage[i].id;
+      let qttProduct = productLocalStorage[i].quantity;
+        for (let q = 0; q < qttProduct; q++) {
+          // const element = array[q];
+          productsArrayToPost.push(idProduct);
+
+        }
+      
+    }
+    console.log(productsArrayToPost);
+    if (firstName && lastName && address && city && email) {
+      const order = {
+        contact : {
+          firstName,
+          lastName,
+          address,
+          city,
+          email,
+        },
+        // products : productLocalStorage,
+        // products: ['415b7cacb65d43b2b5c1ff70f3393ad1', '415b7cacb65d43b2b5c1ff70f3393ad1','055743915a544fde83cfdfc904935ee7']
+
+        products: productsArrayToPost 
+      };
+
+    const promise01 = fetch("http://localhost:3000/api/products/order", {
+      method: "POST",
+      body: JSON.stringify(order),
+      headers: {
+        'Accept': 'application/json', 
+        "Content-Type": "application/json",
+      }
+    })
+
+      promise01.then(async (response) => {
+        try {
+          return response.json();
+        }
+        catch (error) {
+          console.log(error);
+        }
+      }).then(data => {
+        localStorage.setItem("orderId", data.orderId);
+        document.location.href = "confirmation.html";
+        console.log(data);
+      })
 
 
 
@@ -406,3 +660,60 @@ async function ProductDelete (produitLocalStorage) {
 
 
 
+
+
+
+
+
+
+
+
+      // const promise01 = {
+      //   method: 'POST',
+      //   body: JSON.stringify(order),
+      //   Headers: {
+      //     'Accept' : 'application/json',
+      //     'Content-Type': 'application/json',
+      //   },
+      // };
+
+      // fetch("http://localhost:3000/api/products/order", promise01)
+      //   .then ((response) => response.json())
+      //   .then((data) => {
+      //     console.log(data);
+      //     localStorage.setItem("orderId", data.orderId);
+      // })
+      // .catch((error) => {
+      //   console.log(error);
+      // });
+      
+      // fetch('http://localhost:3000/api/order', {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-type': 'application/json'
+      //   },
+      //   body: order,
+      //   json: true
+
+      // })
+
+
+      alert("Commande validée !");
+      // console.log(orderId);
+
+      // valeur remisent à zéro après post
+      inputs.forEach(input => (input.value) = "");
+      firstName = null;
+      lastName = null;
+      address = null;
+      city = null ;
+      email = null; 
+    }
+
+    else {
+      alert(`Veuillez remplir les champs ponctués d'un commentaire rouge`);
+    }
+  });
+};
+
+postForm();
