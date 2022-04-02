@@ -413,7 +413,19 @@ let cityREGEX = new RegExp("^(([0-8][0-9])|(9[0-5])|(2[ab]))+([0-9]{3}){1}(?:(?:
 
 // regex vérifie un nombre quelconque d'entrée de lettre et de chiffre, le @ (x1), nbr et lettre quelconque, le (.) x1) 
 // et l'entrée de lettres minuscules compris entre 2 et 10  
-let emailREGEX = new RegExp("^[a-zA-Z0-9.-_]+[@]{1}[a-zA-Z0-9.-_]+[.]{1,5}[a-z]{2,10}$");
+// let emailREGEX = new RegExp("^[a-zA-Z0-9.-_]+[@]{1}[a-zA-Z0-9.-_]+[.]{1}[a-z]{2,10}$");
+// let emailREGEX = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+// let emailREGEX = new RegExp("^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$");
+// let emailREGEX = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,10}))$/;
+// let emailREGEX = /^\(w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
+// let emailREGEX = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((([a-zA-Z\-0-9]+\.{1})+[a-zA-Z]{2,5}))$/;
+
+//--------------------------------------------------------------------------------------------------------/!\
+// Pour que la limitation fonctionne dans le regex commun en ligne, enlever le +entre chaque enchaînement
+// bloc test... Sinon, la limitation n'est pas pris en compte et cela devient trop permissive. 
+//--------------------------------------------------------------------------------------------------------/!\
+// let emailREGEX = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/; --------------> EXEMPLE AVEC LES "+", VALIDE EN LIGNE
+let emailREGEX = /^([a-zA-Z0-9_\.\-]{1,10})\@(([a-zA-Z0-9\-]{1,10})\.)+([a-zA-Z0-9]{2,10})$/; // -------> Regex corrigé pour limitation
 // ----------------------------REGEX
 
 // sélection des inputs dans une variable
@@ -619,87 +631,32 @@ function postForm() {
           city,
           email,
         },
-        // products : productLocalStorage,
-        // products: ['415b7cacb65d43b2b5c1ff70f3393ad1', '415b7cacb65d43b2b5c1ff70f3393ad1','055743915a544fde83cfdfc904935ee7']
-
         products: productsArrayToPost 
       };
 
-    const promise01 = fetch("http://localhost:3000/api/products/order", {
-      method: "POST",
+    const options = {
+      method: 'POST',
       body: JSON.stringify(order),
       headers: {
-        'Accept': 'application/json', 
-        "Content-Type": "application/json",
-      }
-    })
+        'Accept' : 'application/json',
+        "Content-Type": "application/json"
+      },
+    };
 
-      promise01.then(async (response) => {
-        try {
-          return response.json();
-        }
-        catch (error) {
-          console.log(error);
-        }
-      }).then(data => {
+    // récupération api et ajout données
+    fetch("http://localhost:3000/api/products/order", options)
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
         localStorage.setItem("orderId", data.orderId);
         document.location.href = "confirmation.html";
-        console.log(data);
       })
+      .catch((error) => {
+        alert("erreur du Fetch : " + error);
+      });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      // const promise01 = {
-      //   method: 'POST',
-      //   body: JSON.stringify(order),
-      //   Headers: {
-      //     'Accept' : 'application/json',
-      //     'Content-Type': 'application/json',
-      //   },
-      // };
-
-      // fetch("http://localhost:3000/api/products/order", promise01)
-      //   .then ((response) => response.json())
-      //   .then((data) => {
-      //     console.log(data);
-      //     localStorage.setItem("orderId", data.orderId);
-      // })
-      // .catch((error) => {
-      //   console.log(error);
-      // });
-      
-      // fetch('http://localhost:3000/api/order', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-type': 'application/json'
-      //   },
-      //   body: order,
-      //   json: true
-
-      // })
-
-
+      // Message commande
       alert("Commande validée !");
-      // console.log(orderId);
 
       // valeur remisent à zéro après post
       inputs.forEach(input => (input.value) = "");
