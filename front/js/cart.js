@@ -269,18 +269,32 @@ function calculPrice(productLocalStorage, productInfo) {
 
 
 //------------------------------------------------------------------------------------------------
-//  Fonction modification des quantités (localSto) / en différé/recharge auto de la page (DOM)
+//  Fonction modification des quantités (localSto)
 //------------------------------------------------------------------------------------------------
 /* 
-    ->  Pointe la classe sur laquelle on récupère l'information quantité value du DOM
-        ->  Boucle sur la valeur/quantité des différents produits du panier
-            ->  Ecoute d'un event sur le moindre changement sur la valeur pointé (.change)
-                - création d'une variable temp. pour valeur de chaque produit
-                  ->  Ajout d'une condition anti lettre et quantité compris entre 0 et 100
-                      - attribution de la nouvelle valeur/quantité à la valeur/quantité du local Storage (ciblant quantity du produit)
-                      - mis à jour du local storage
-                  -> Sinon, erreur concernant l'entrée de l'utilisateur pour la quantité du produit ciblé 
+  (Info) Prend en compte la modification des quantités(incré/décré-mentation) et impose un regex pro-chiffre. 
+
+  - Pointe la classe sur laquelle on récupère l'information quantité.valeur du DOM
+    <=> Boucle sur la valeur/quantité des différents produits du panier
+        Ecoute 0 (input)
+          - Récupération des entrées quantité des utilisateurs
+          - Récupération dans une variable temp plus précise
+
+      ->  Ajout d'une condition anti lettre et quantité compris entre 0 et 100 et différent de chiffre
+          Ecoute 1 (keydown "enter")
+            - Permet de valider l'entrée utilisateur dans l'input sans que celui-ci lance la recharge 
+              de la page à chaque intéraction (dé/incrémentation)
+            - Mise à jour quantité au local storage
+
+            Ecoute 2 (Change "min/max")
+            - Raffraichit la page lors d'un changement sur la quantité depuis les bouttons min/max des produits
+            - Mise à jour quantité au local storage
+
+      -> Sinon, message d'erreur concernant l'entrée de l'utilisateur pour la quantité du produit ciblé 
 */
+//------------------------------------------------------------------------------------------------
+//  Regex anti null/lettre/symbole/ et plus de 3 chiffres pour "entrée quantité" du produit
+const onlyNumberREGEX = new RegExp("^([0-9]{1,3})$");
 //------------------------------------------------------------------------------------------------
 async function quantityModifcation(productLocalStorage) {
   
@@ -291,39 +305,58 @@ async function quantityModifcation(productLocalStorage) {
   for (let index = 0; index < valueQuantityNow.length; index++) {
 
     // ecoute sur le dom
-    valueQuantityNow[index].addEventListener('change', (event) => {
-      console.log("je suis le click de add ev");
+    valueQuantityNow[index].addEventListener('input', (event) => {
 
-      //variable temp
+      // variable temp
       let qttModifValue_new = valueQuantityNow[index].value;
+
       // let qttModifValue_new = parseInt.apply(qttModifValue_new0);
       console.log(typeof qttModifValue_new);
       
         // condition anti > 100
-        if (qttModifValue_new > 0 && qttModifValue_new <= 100) {
+        if (qttModifValue_new > 0 && qttModifValue_new <= 100 && (qttModifValue_new.match(onlyNumberREGEX))) {
+     
+          valueQuantityNow[index].addEventListener('keydown', (event) => {
+            const enterTouch = event.key;
 
-          // modification de la valeur en temps réel
-          productLocalStorage[index].quantity = parseInt(qttModifValue_new);
-          localStorage.setItem("produit", JSON.stringify(productLocalStorage));
-          
-          //actualisation
-          location.reload();
+            if (enterTouch === 'Enter') {
+            // modification de la valeur en temps réel
+            console.log(enterTouch);
+            productLocalStorage[index].quantity = parseInt(qttModifValue_new);
+            localStorage.setItem("produit", JSON.stringify(productLocalStorage));
+            
+            //actualisation
+            location.reload();
+            return;
+            }
+          })
+
+          valueQuantityNow[index].addEventListener('change', (event) => {
+            productLocalStorage[index].quantity = parseInt(qttModifValue_new);
+            localStorage.setItem("produit", JSON.stringify(productLocalStorage));
+
+            //actualisation
+            location.reload();
+          })
         } 
         
         else {
           console.log(typeof qttModifValue_new);
-          alert(`Entrée invalide ! Veuillez saisir une quantité compris entre 1 et 100 pour votre produit...`)
+          alert(`Veuillez respecter les règles suivantes ; 
+        * Ne peux pas être vide,
+        * Contenir de lettres, 
+        * De caractères spéciaux, 
+        * Et ne avoir plus de 3 chiffres pour quantité (max 100).`);
           console.log("Je suis supérieur à 100");
 
           //actualisation (avec reload remet à jour input quantité)
           location.reload();
         }
-
     }) // fin de l'event change
   } // fin de boucle
 };
 
-  
+
 //------------------------------------------------------------------------------------------------
 //  Fonction suppression d'un article dans le panier
 //------------------------------------------------------------------------------------------------
@@ -340,7 +373,8 @@ async function quantityModifcation(productLocalStorage) {
                   des conditions pour mieux cibler le produit à effacer du panier (locale Storage)
                 - Enregistrement sur le locale storage avec un tableau restructurée (élément ciblé)
               -> Sinon effacer le local storage pour un panier vide 
-    Explication du filtre + :
+
+  Explication du filtre + :
     1/ Le filtre vérifie si la couleur et id sont différent du produit de (ref click) depuis le filtre.
     --->
     2/ Si vrai, les valeurs trouvées sont à nouveau stockées dans le locale storage 
@@ -411,20 +445,12 @@ let adressREGEX = new RegExp("^[0-9]{1,3}(?:(?:[,. ]){1}[-a-zA-Zàâäéèêëï
 // regex vérifie 5 chiffre, espace, entrée de lettre quelconque en acceptant carac.spé accent, limité à 46 lettres
 let cityREGEX = new RegExp("^(([0-8][0-9])|(9[0-5])|(2[ab]))+([0-9]{3}){1}(?:(?:[,. ]){1}[-a-zA-Zàâäéèêëïîôöùûüç]{1,75})+$");
 
-// regex vérifie un nombre quelconque d'entrée de lettre et de chiffre, le @ (x1), nbr et lettre quelconque, le (.) x1) 
-// et l'entrée de lettres minuscules compris entre 2 et 10  
-// let emailREGEX = new RegExp("^[a-zA-Z0-9.-_]+[@]{1}[a-zA-Z0-9.-_]+[.]{1}[a-z]{2,10}$");
-// let emailREGEX = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
-// let emailREGEX = new RegExp("^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$");
-// let emailREGEX = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,10}))$/;
-// let emailREGEX = /^\(w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
-// let emailREGEX = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((([a-zA-Z\-0-9]+\.{1})+[a-zA-Z]{2,5}))$/;
-
 //--------------------------------------------------------------------------------------------------------/!\
 // Pour que la limitation fonctionne dans le regex commun en ligne, enlever le +entre chaque enchaînement
 // bloc test... Sinon, la limitation n'est pas pris en compte et cela devient trop permissive. 
+// Les + à enlever sont espacésdans la regex ci-dessous ;
 //--------------------------------------------------------------------------------------------------------/!\
-// let emailREGEX = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/; --------------> EXEMPLE AVEC LES "+", VALIDE EN LIGNE
+// let emailREGEX = /^([a-zA-Z0-9_\.\-]) + \@(([a-zA-Z0-9\-]) + \.)+([a-zA-Z0-9]{2,4}) + $/; --------------> EXEMPLE AVEC LES "+", VALIDE EN LIGNE
 let emailREGEX = /^([a-zA-Z0-9_\.\-]{1,10})\@(([a-zA-Z0-9\-]{1,10})\.)+([a-zA-Z0-9]{2,10})$/; // -------> Regex corrigé pour limitation
 // ----------------------------REGEX
 
@@ -497,8 +523,6 @@ const lastNameChecker = (value) => {
     lastName = value.toUpperCase();
     console.log(lastName + " " + value);
   }
-
-  
 };
 //---------------------------------------------------------------------------adressChecker
 const addressChecker = (value) => {
@@ -516,9 +540,7 @@ const addressChecker = (value) => {
     address = value;
     console.log(address + " " + value);
   }
-
 };
-
 //---------------------------------------------------------------------------cityChecker
 const cityChecker = (value) => {
   console.log(value);
@@ -536,7 +558,6 @@ const cityChecker = (value) => {
     console.log(city + " " + value);
   }
 };
-
 //---------------------------------------------------------------------------emailChecker
 const emailChecker = (value) => {
   console.log(value);
@@ -547,11 +568,11 @@ const emailChecker = (value) => {
     // if (!value.match(caracSpecREGEX)) errorDisplay("emailErrorMsg", "Pas de caractères spéciaux tel que : $%=... Le @ et (-_.) sont tolérés ");
 }
 
-else {
+  else {
     errorDisplay("emailErrorMsg", "Email valide.", true);
     email = value;
     console.log(email + " " + value);
-}
+  }
 };
 
 //-----------------------------------------------
