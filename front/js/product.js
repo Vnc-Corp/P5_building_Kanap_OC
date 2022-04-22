@@ -7,21 +7,18 @@ let str = window.location.href;
 let url = new URL(str);
 let productId = url.searchParams.get("id"); // va chercher les paramètres de la route back-end js
 
+
 //------------------------------------------------------------------------------------------------
 // Création des variables 
 //------------------------------------------------------------------------------------------------
-// variable articleSolo() 
+// variable articleSolo 
 let articleSolo = "";
 
-// Variable displayArticleSolo() 
-// let option_elt = document.createElement("option"); // création de l'éléments option
-// select_elt = option_elt;
-
-// Variable getSelectValue
+// Variable getSelectValue() (color)
 let selectColor = "";
 let colorOk = false;
 
-// Variable basketQuantity()
+// Variable CartQuantity() 
 let quantityOk = false;
 const valueJs = document.querySelector('#quantity'); // attribution qui pointe vers id de input
 let resultQuantity = "";
@@ -29,32 +26,33 @@ let resultQuantity = "";
 // Variable articleStokage()
 let colorInArray = false;
 let idInArray = false;
-// -------------------- variable qui limite la quantité maximale des article
+// -------------------- variable qui limite la quantité maximale des articles
 let maxQuantity = 100;
+
 //------------------------------------------------------------------------------------------------
-// variable lecture du stringify articleJson/articleSolo/produit
-let arrayBasket = JSON.parse(localStorage.getItem("produit"));
+// Variable lecture du stringify articleJson/articleSolo/produit
+let arrayCart = JSON.parse(localStorage.getItem("produit"));
 
-
-
-
+// Variable pour afficher la qtt panier et calucul avec entrée qtt utilisateur (displayPopUp2)
+let displayMaxQtt = "";
 //------------------------------------------------------------------------------------------------
 /* Lancement des fonctions */
 //------------------------------------------------------------------------------------------------
 getArticleSolo();
 getSelectValue();
 
+
 // *****************************************************************************************************************
 // *****************************************************************************************************************
 //------------------------------------------------------------------------------------------------
-//  fonction getArticleSolo
+//  fonction getArticleSolo()
 //------------------------------------------------------------------------------------------------
 /* 
-    - Cette fonction permet de récupérer les données de l'api qui contient les produit à afficher.
-    - Fetch + url
-    - Promesse à laquelle j'attribue les données dataAPI dans la variable articleSolo
-    - renvoie fonction displayArticle avec pour param "articleSolo"
-    - ajout catch error si l'api n'est pas joignagle
+    Info : Cette fonction permet de récupérer les données de l'api qui contient les information du produits à afficher.
+        -   Fetch + url
+        -   Promesse à laquelle j'attribue les données dataAPI dans la variable articleSolo
+        -   Renvoie fonction displayArticle avec pour param "articleSolo"
+        -   Catch error si l'API n'est pas joignable
 */
 //------------------------------------------------------------------------------------------------
 async function getArticleSolo() {
@@ -63,7 +61,6 @@ async function getArticleSolo() {
     .then ((response) => {
         return response.json()
     })
-    
     .then(function (dataAPI){
         articleSolo = dataAPI;
         // console.table(articleSolo);
@@ -71,38 +68,32 @@ async function getArticleSolo() {
             return displayArticleSolo(articleSolo); // attribut la variable à une fonction (qui va afficher)
         }
     })
-    
     .catch((error) => {
         console.log("Erreur de la requête API");
     })
 };
 
+
 //------------------------------------------------------------------------------------------------
-//  fonction displayArticleSolo
+//  fonction displayArticleSolo()
 //------------------------------------------------------------------------------------------------
 /* 
-    - Fonction qui va permettre d'afficher les informations récupérées concernant l'article ID
-    - Prend en paramètre "articleSolo"
-    - création variable temp qui créé et récupère la valeur contenu dans le dataAPI(articleSolo)
+    Info : fonction qui va permettre d'afficher les informations récupérées pour l'article/ID
+        -   Prend en paramètre "articleSolo"
+        -   Création variable temp qui créé et récupère la valeur contenu dans le dataAPI(articleSolo)
 
-        partie 1
-            -> Titre
-            -> Prix
-            -> description
+            Partie 1
+                ->  Titre
+                ->  Prix
+                ->  Description
 
-        partie 2
-            -> image + alt 
+            Partie 2
+                ->  Image + Alt 
 
-        partie 3
-            -> initialisation des couleurs pour chaue article
-            - injection array color en fonction du produit puis boucle sur la data en sélectionnant le tableau des couleurs
-            - cible l'ID du html "select"
-            - injection de html option et sa valeur pour l'event au clic
-        
-    Nb :    colorSolo devient la référence des couleurs à afficher en boucle en fonction de id produit
+            Partie 3
+                <=> BOUCLE sur la data.colors en sélectionnant le tableau des couleurs
+                    -   Option Couleurs
 */
-
-const contentDisplayArticle = displayArticleSolo;
 //------------------------------------------------------------------------------------------------
 async function displayArticleSolo(articleSolo) {
 
@@ -112,51 +103,42 @@ async function displayArticleSolo(articleSolo) {
     const description_elt = document.getElementById("description").textContent = articleSolo.description;
     
     // partie 2
-    const img_elt = document.createElement("img"); // création de la balise image
+    const img_elt = document.createElement("img"); 
     img_elt.src = articleSolo.imageUrl; 
     img_elt.alt = articleSolo.altTxt;
-    let item__img_elt = document.querySelector(".item__img"); // sélectionne la div qui va recevoir img.src
+    let item__img_elt = document.querySelector(".item__img");
     item__img_elt.insertAdjacentElement("afterbegin", img_elt);
 
-    // partie 3
-    /*
-    
-    */
-    // option_elt = articleSolo.colors.map ((colorSolo) => {
-        
-        for (let colorSolo of articleSolo.colors) {
+    // partie 3 (color)
+    for (let colorSolo of articleSolo.colors) {
         let option_elt = document.createElement("option"); // création de l'éléments option
-        // let select_value = option.value;
         document.querySelector("#colors").appendChild(option_elt);
         option_elt.textContent = colorSolo;
-
-        // // let select_value = option.value;
-        // document.querySelector("#colors").innerHTML += `
-        // <option value ="${colorSolo}">${colorSolo}</option>;
-        // `
-        // console.log(option_elt);
     } 
 };
 
+
 //------------------------------------------------------------------------------------------------
-//  fonction sélection de couleur et retourne sa valeur 
+//  fonction getSelectValue()
 //------------------------------------------------------------------------------------------------
 /* 
-    - Créé une variable temp qui cible l'ID colors
-    - Sur intéraction du clic, sur l'élément html select_elt, 
-        -> - attribue la valeur couleur depuis la data (e)
-            -> lance condition si la selection couleur est vrai ou fausse;
+    Info :  Vérifie et écoute le choix utilisateur des couleurs pour un Kanap.
+            En fonction de colorOk, on peut valider l'ajout au panier (lien addToCart())
+    
+        -   Cilble l'élément/ID colors
+        |> Ecoute entrée utilisateur, sur l'élément DOM select_elt, 
+            -   Attribut de la valeur
+                ->  SI la selection est diffférente de "0", couleurOK vaut vrai 
+                <-  SINON couleurOk vaut faux
 */
 //------------------------------------------------------------------------------------------------
 function getSelectValue(selectId) {
     let select_elt = document.getElementById("colors"); // cible le select color
-    
     select_elt.addEventListener('input', (e) => {
         selectColor = e.target.value;
-        // console.log(selectColor + " couleur"); 
+
         if (selectColor != 0) {
             colorOk = true;
-            // console.log(selectColor + " cible selectColor " + colorOk + " etat couleur");
             return selectColor, colorOk;
         }
         else {
@@ -166,36 +148,68 @@ function getSelectValue(selectId) {
     })
 };
 
-//------------------------------------------------------------------------------------------------
-//  fonction quantité saisie
-//------------------------------------------------------------------------------------------------
-/*  Vérifie :
-    ->  - la valeur quantité saisie est = 0 (quantityOk = false)
-        - la valeur  quantité saisie > 100 (quantityOk = false)
-        - sinon return booléen quantityOk = true
-*/ 
-//------------------------------------------------------------------------------------------------
-let basketQuantity = () => {
 
-    if (valueJs.value == 0) {
-        quantityOk = false;
-        alert(`N'oubliez pas de choisir le nombre de ${articleSolo.name} que vous souhaitez avant de l'ajouter au panier.`);
-        console.log("ton truc est égal à zéro depuis if");
-        console.log(quantityOk);
+//------------------------------------------------------------------------------------------------
+//  Ecoute sur la quantité entrée par l'utilisateur
+//------------------------------------------------------------------------------------------------
+/*
+    Info :  Portée de cette fonction sur la quantité avant clique ajout panier.
+            Pas valeur de post/push sur le locale Storage. 
+            Vérifie rigueur d'entrée utilisateur.
+
+        ->  SI la quantité est différentes de l'expression régulière ci-dessous :
+            -   Initialisation quantité à 1
+            -   Message d'alert ; rappel des règles d'entrée quantité (no letter/no $*-+*_-/ max number(3)
+        <- SINON SI la quantité est > 100
+            -   Message d'alert + initialisation quantité maximum à 100
+        <- SINON transmission de la valeur quantité à la variable resultQuantity
+*/
+//------------------------------------------------------------------------------------------------
+//  Regex anti null/lettre/symbole/plus de 3 chiffres pour "entrée quantité" du produit
+const onlyNumberREGEX = new RegExp("^([0-9]{1,3})$");
+//------------------------------------------------------------------------------------------------
+valueJs.addEventListener('input', () => {
+
+    if (!valueJs.value.match(onlyNumberREGEX)) {
+        valueJs.value = 1;
+        alert(`Veuillez respecter les règles suivantes ; 
+        * Le champs ne peux pas être vide,
+        * Contenir de lettres, 
+        * De caractères spéciaux, 
+        * Et ne pas avoir plus de 3 chiffres pour quantité maximum (100).`);
+
+        console.log(valueJs.value);
     }
 
     else if (valueJs.value > 100) {
+        alert(`Nous sommes désolé de ne pas pouvoir vous vendre ${valueJs.value} ${articleSolo.name}. Nous limitons chaque article à ${valueJs.value = 100} par client...`);
+    }
+
+    else {
+        resultQuantity = parseInt(valueJs.value); //--------------------------
+    }
+})
+
+//------------------------------------------------------------------------------------------------
+//  fonction cartQuantity
+//------------------------------------------------------------------------------------------------
+/*  
+    Info:   Vérifie et valide l'envoie la quantité.
+            Permet une double sécurité pour que le panier ne recoit pas de quantité incohérente.
+                ->  SI la valeur quantité saisie est = 0 ou sup. à 100 (quantityOk = false)
+                <-  SINON return (quantityOk = true) pour addToCart()
+*/ 
+//------------------------------------------------------------------------------------------------
+let cartQuantity = () => {
+
+    if (valueJs.value == 0 || valueJs.value > 100) {
         quantityOk = false;
-        alert(`Nous sommes désolé de ne pas pouvoir vous vendre ${valueJs.value} ${articleSolo.name}. Nous limitons chaque article à 100 par client...`);
-        console.log("plus de 100, alerte au gogole");
         console.log(quantityOk);
     }
 
     else {
-
-        console.log("retourn valeur depuis le else");
-        resultQuantity = parseInt(valueJs.value); //--------------------------
         quantityOk = true;
+        resultQuantity = parseInt(valueJs.value); //--------------------------
         console.log(quantityOk + " : Quantité entree est ok");
         return resultQuantity, quantityOk;
     }
@@ -203,15 +217,29 @@ let basketQuantity = () => {
 
 
 // -------------------------------------------------------------------------------------------------------
-//  fonction stokage des données ID / Color / Quantité
+//  fonction articleStorage()
 // -------------------------------------------------------------------------------------------------------
 /*  
-* fonction appelé dans...
-    - Création objet (id, color et quantity)
-        ->  vérification si tableau existe, sinon le créer 
-            ->  initialiser la recherche .find (si id et couleur du tableau vaut la sélection couleur et id du produit)
-                ->  si findArticle est vrai
-                -   nouvelle valeur quantité, sinon créé une nouvelle entrée au tableau existant
+    Info:   stokage des données ID / Color / Quantités au local storage
+
+        *   Création objet (id, color et quantity)
+            ->  IF tableau existe
+                <Mtd> FIND. id/color panier ET id/color id/color de l'article entrant 
+
+                    ->  SI trouvé couleur du tableau vaut la sélection couleur et id du produit (resultat de findArticle)
+                        -   Ajout nouvelle quantité sur celle trouvée
+                        Exp: nouvelle quantitée = 50 + quantitée panier (80) = 130. > nouvelle valeur = 100
+                        
+                            ->  SI l'entrée et panier dépasse 100 article
+                                -   Alert Msg pop Up 2
+                                -   Réinitialisation article totale à la valeur de maxQuantity(100)
+                                
+                            <-  SINON commande valide avec Window.Confirm depuis fonction PopUp 1
+                        -   Mise à jour locale storage en JSON pour la nouvelle valeur de quantité d'article
+
+                    <-  SINON push au tableau un article qui n'a le même ID mais pas la même couleur
+
+            <-  SINON Créer un tableau vide et push l'article avec Msg pop Up 1
 */ 
 // -------------------------------------------------------------------------------------------------------
 async function articleStokage() {
@@ -223,12 +251,12 @@ async function articleStokage() {
     }
 
     // Si tableau existe
-    if (arrayBasket){
+    if (arrayCart){
         console.log("array existe ! passse à la condition suivante");          
         console.log(productId);
 
         // initialiser le .find qui va trouver l'article
-        const findArticle = arrayBasket.find((element) => element.id === productId && element.color === selectColor);
+        const findArticle = arrayCart.find((element) => element.id === productId && element.color === selectColor);
 
             // si produit trouvé avec id et color pareil
             if (findArticle) {
@@ -237,36 +265,36 @@ async function articleStokage() {
                 // check quantité + opération ajout
                 findArticle.quantity += resultQuantity;
                 
-                // vérification de la quantité maximale
+                // vérification de la quantité maximale qui check le panier et le modifie à 100/!\
+                
                 if (findArticle.quantity > maxQuantity) {
                     console.log("je suis supérieur à 100 : " + findArticle.quantity);
                     // alert(`Désolé, votre panier dépasse la quantité maximum pour ce produit. Celui-ci sera donc limité à 100 dans votre panier.`);
+                    displayMaxQtt = findArticle.quantity;
                     
                     // réinitialisation à 100, valeur de ma variable déclarée
                     findArticle.quantity = maxQuantity;
                         console.log("je réinitialise à 100 : " + findArticle.quantity);
-
                         displayPopUp_2();
                     }
                     
-                    // voué à disparaitre
+                    // Commande ok
                     else {
                         console.log("Je suis inférieur à 100... : " + findArticle.quantity);
                         displayPopUp_1();
-                        console.log(" je suis pop 2");
+                        console.log(" je suis pop 1");
                     }
 
                 // memorisation nouvelle quantité en version json (via stringify, (utilse parse pour le lire en html après))
-                localStorage.setItem("produit", JSON.stringify(arrayBasket));
+                localStorage.setItem("produit", JSON.stringify(arrayCart));
                 console.log("result final que je vais post" + resultQuantity);
-                
             }
             
             // sinon, si id et color différent, ajout du produit au tableau
             else {
                 console.log("je suis un nouvel article, avec le même id mais pas la même color");
-                arrayBasket.push(articleJson);
-                localStorage.setItem("produit", JSON.stringify(arrayBasket));
+                arrayCart.push(articleJson);
+                localStorage.setItem("produit", JSON.stringify(arrayCart));
                 displayPopUp_1();
             }     
             
@@ -275,151 +303,117 @@ async function articleStokage() {
         // sinon si tableau n'existe pas, le créer et ajouter le premier produit
         else {
             console.log("array dont exist !");
-            arrayBasket = [];
-            arrayBasket.push(articleJson);
-            localStorage.setItem("produit", JSON.stringify(arrayBasket));
-            console.log(arrayBasket);
+            arrayCart = [];
+            arrayCart.push(articleJson);
+            localStorage.setItem("produit", JSON.stringify(arrayCart));
+            console.log(arrayCart);
 
             displayPopUp_1();
             console.log(" je suis pop 3");
     }
-    return 
+    // return 
 };
 
 console.log(colorInArray + " valeur de couleur");
 console.log(idInArray + " valeur de ID");
 console.log(productId + " : id du produit");
 
-
-// -------------------------------------------------------------------------------------------------------
-// Fonction add to cart et envoie de donnée via localStorage avancé
+//--------------------------------------------------------------------------------------------------------
+//  Fonction addToCart()
 //--------------------------------------------------------------------------------------------------------
 /*
-    A l'évènement du clic qui cible id "buttonAddToCart" réalise :
-        -   appel du script qui vérifie la quantité entrée de l'utilisateur
-            -> si variable boo color et quantité sont true
-                -   appel du script articleStorage(), coeur de l'ajout article en fonction de ;
-                    tableau existe, id et color idem à choix utilisateur 
-                - sinon popup d'information et var boo = false
+    Info:   Au clic, lance plusieurs vérifications avant de pemerttre l'ajout d'article
+            |> Ecoute au clic qui pointe sur le boutton "Ajouter au panier"
+                -   Lancement des fonctions pour check :
+                    * Quantité
+                    * Couleur choisie
+                    
+            ->  SI Couleur et quantité OK
+                -   Appel du script articleStorage(), coeur de l'ajout article pour :
+                    * D'autres vérifications
+                    * Et Push
+                    
+                <-  SINON SI couleur "false" et quantité "true"
+                    -   Alert Msg spécifique
+                
+                <-  SINON SI couleur "true" et quantité "false"
+                    -   Alert Msg spécifique
+
+            <-  SINON
+                -   Alert Msg spécifique mentionant false pour les deux
 */
 //--------------------------------------------------------------------------------------------------------
 const buttonAddToCart = document.getElementById('addToCart');
 // event au click ajout au panier
 buttonAddToCart.addEventListener('click', () => {
-    basketQuantity(); // renvoie la quantité d'article choisi
+    cartQuantity(); // renvoie la quantité d'article choisi
     getSelectValue(); // renvoie la couleur choisie
     
-    console.table(arrayBasket);
+    console.table(arrayCart);
         if (colorOk === true && quantityOk === true) {
             // alert(`Vrai Article ${articleSolo.name} ajouté à votre panier !`); // popup rapide d'information à améliorer
             articleStokage(); // coeur de l'action
-            console.table(arrayBasket);
+            console.table(arrayCart);
             console.log(" Etat couleur : " + colorOk );
             console.log(" Etat quantité : " + colorOk );
         }
+
+            else if (colorOk === false && quantityOk === true) {
+                alert(`Veuillez choisir une couleur avant de valider l'ajout de votre article ${articleSolo.name}`);
+                console.log(" Etat couleur : " + colorOk );
+                console.log(" Etat quantité : " + colorOk );
+            }
+
+            else if (colorOk === true && quantityOk === false) {
+                alert(`Veuillez choisir une quantité avant de valider l'ajout de votre article ${articleSolo.name}`);
+                console.log(" Etat couleur : " + colorOk );
+                console.log(" Etat quantité : " + colorOk );
+            }
 
         else {
-            alert(`Veuillez choisir une couleur avant de valider l'ajout de votre article ${articleSolo.name}`);
-            console.log(" Etat couleur : " + colorOk );
-            console.log(" Etat quantité : " + colorOk );
+            alert(`Veuillez choisir une couleur et une quantité avant de valider l'ajout de votre article ${articleSolo.name}`);
         }
-
-        return arrayBasket;
+        return arrayCart;
 });
 
 // -------------------------------------------------------------------------------------------------------
-//  fonction display PopUp version 1 et version 2
+//  fonction displayPopUp version 1 et version 2
+// -------------------------------------------------------------------------------------------------------
 /*
-    (i) Deux fonctions popUp indépendante pour afficher un retour après clic et vérification général (ref articleStokage())
-    ->  Version 1
+    Info:   Deux fonctions popUp indépendante pour afficher un message avec des informations du produit/quantité
+            Présent (3x) dans articleStokage() pour s'afficher après vérification multiples.
+        ->  Version 1
         -   affiche un message classique informant de l'ajout de l'article (quantity/name/color)
     
-    ->  Version 2
+        ->  Version 2
         -   affiche un message secondaire prenant en compte la quantité maximal du produit enregistré
             dans le panier
 
-    Nb: Présent (3x) dans articleStokage() pour s'afficher après vérification multiple 
 */
 //--------------------------------------------------------------------------------------------------------
-//version 1
-const displayPopUp_1 =() =>{
+//  Version 1
+//  Affiche commande normale
+const displayPopUp_1 =() => {
+    if(window.confirm(`Votre commande de ${resultQuantity} ${articleSolo.name} de couleur ${selectColor} est ajoutée au panier.
 
-    // affiche commande normale
-    if(window.confirm(`Votre commande de ` +  resultQuantity + ` ${articleSolo.name} de couleur ` + selectColor + ` est ajoutée au panier.
-Pour consulter votre panier, cliquez sur OK`))
+Pour consulter votre panier, cliquez sur "OK".
+Sinon sur "ANNULER" pour poursuivre votre commande.`))
         {
             window.location.href ="cart.html";
         }    
 };
 
-// version 2
-const displayPopUp_2 =() =>{
+//  Version 2
+//  Affiche commande secondaire qui prend en compte la quantité maximal dépassée
+const displayPopUp_2 =() => {
+    if(window.confirm(`Votre commande de ${articleSolo.name} de couleur ${selectColor} atteint ${displayMaxQtt} articles et dépasse la quantité maximale(100).
+Il sera limité à 100 dans votre panier.
 
-    // affiche commande secondaire quiprend en compte la quantité maximal dépassée
-    if(window.confirm(`Votre commande de ` +  resultQuantity + ` ${articleSolo.name} de couleur ` + selectColor + ` dépasse la quantié maximal (100).
-Votre panier sera donc limité à 100 articles pour ce produit.
-Pour consulter votre panier, cliquez sur OK`))
+Pour consulter votre panier, cliquez sur "OK".  
+Sinon sur "ANNULER" pour poursuivre votre commande.`))
         {
             window.location.href ="cart.html";
         }
 };
 
-
-//--------------------------------------------------------------------------------------------------------
-//version 2
-// let func = myFunction();
-
-// async function myFunction() {
-//     var popup = document.getElementById("myPopup");
-//     popup.classList.toggle("show");
-//   }
-
-// async function popUpVersion2() {
-
-    // window.addEventListener('click', () => {
-    //     console.log("click fonctionne");
-
-    //      document.body.innerHTML = `
-    //     <div class="popup" onclick="${func}">Click me!
-    //     <span class="popuptext" id="myPopup">Popup text...</span>
-    //     </div> 
-    //     `
-        
-        // myFunction();
-
-
-
-    // })
-// };
-// popUpVersion2();
-
-
-
-
-
-
-// document.getElementById("cart").textContent += `
-    
-//         <article>
-//             <img src="" alt="">
-//             <h1 id="notification"> Ajout du produit (nom produit et quantité)</h3>
-//             <p class="choice_1"> rester ici</p>
-//             <p class="choice_1"> accueil</p>
-//             <p class="choice_1"> panier </p>
-//         </article>
-//     `
-
-
-
-
-
-
-console.table(arrayBasket);
-
-
-// function testMoi () {
-//     window.addEventListener('click', () => {
-//         console.log("je suis function test moi haha");
-//     })
-// }
-// testMoi();
+console.table(arrayCart);
